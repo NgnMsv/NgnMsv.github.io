@@ -804,7 +804,29 @@ section,
   border-left: 2px solid var(--accent-color);
   position: relative;
 }
+.container {
+  max-width: 1200px;
+}
+.education-container {
+  display: flex;  
+}
+.resume-icon {
+  width: 250px;              /* Set the width of the icon */
+  height: 250px;        /* Adds space between the text and the image */
+  padding-right: 0;
+  margin-left: auto;
+}
+@media (max-width: 800px) {
+  /* Stack the icon below the text on small screens */
+  .education-container {
+    display: block; /* Stacks items vertically */
+  }
 
+  .resume-icon {
+    width: 150px; /* Optionally reduce the size of the icon for smaller screens */
+    height: 150px;
+  }
+}
 .resume .resume-item h4 {
   line-height: 18px;
   font-size: 18px;
