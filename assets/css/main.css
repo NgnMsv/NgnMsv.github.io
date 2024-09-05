@@ -811,8 +811,8 @@ section,
   display: flex;  
 }
 .resume-icon {
-  width: 251px;              /* Set the width of the icon */
-  height: 251px;        /* Adds space between the text and the image */
+  width: 100px;              /* Set the width of the icon */
+  height: 100px;        /* Adds space between the text and the image */
   padding-right: 0;
   margin-left: auto;
 }
