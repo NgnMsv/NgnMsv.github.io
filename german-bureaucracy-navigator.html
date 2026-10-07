@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>German Bureaucracy Navigator — UX Case Study · Negin Mousavi</title>
+  <meta name="description" content="An independent UX research and product design case study exploring how newcomers to Germany could navigate administrative processes through personalised, transparent, step-by-step guidance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #fafaf9;
+      --surface:  #ffffff;
+      --text:     #1a1a1a;
+      --body:     #404653;
+      --muted:    #6b7280;
+      --border:   #e5e7eb;
+      --coral:    #ff6b6b;
+      --teal:     #00c9a7;
+      --violet:   #845ef7;
+      --amber:    #ffd43b;
+      --sky:      #4dabf7;
+      /* darker shades of the same hues, for text on light backgrounds */
+      --coral-ink:  #c92a2a;
+      --teal-ink:   #087f5b;
+      --violet-ink: #5f3dc4;
+      --amber-ink:  #846100;
+      --sky-ink:    #1864ab;
+      --coral-bg:  #fff0f0;
+      --teal-bg:   #e6fcf5;
+      --violet-bg: #f5f0ff;
+      --amber-bg:  #fff9e6;
+      --sky-bg:    #e7f5ff;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--violet-ink); }
+    :focus-visible { outline: 2px solid var(--violet-ink); outline-offset: 3px; border-radius: 4px; }
+    [lang="de"] { font-style: italic; }
+
+    .skip-link { position: absolute; left: -9999px; top: 8px; z-index: 200; background: var(--text); color: white; padding: 10px 16px; border-radius: 8px; }
+    .skip-link:focus { left: 8px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* ── Nav ── */
+    nav.site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(250,250,249,0.9); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 0 6vw; height: 64px;
+    }
+    .nav-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
+    .nav-logo {
+      font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.1rem; text-decoration: none;
+      background: linear-gradient(90deg, var(--coral), var(--violet));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nav-back { text-decoration: none; font-size: 0.85rem; font-weight: 500; color: var(--muted); white-space: nowrap; transition: color 0.2s; }
+    .nav-back:hover { color: var(--text); }
+    .btn {
+      display: inline-block; text-decoration: none; padding: 11px 24px;
+      border-radius: 100px; font-size: 0.88rem; font-weight: 600;
+      transition: transform 0.18s, box-shadow 0.18s; cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .btn-primary { background: var(--coral-ink); color: white; border: none; }
+    .btn-ghost   { background: white; color: var(--text); border: 1.5px solid var(--border); }
+
+    /* ── Layout ── */
+    section { padding: 84px 6vw; }
+    section:nth-of-type(even) { background: var(--surface); }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .section-tag { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+    .section-title { font-family: 'Sora', sans-serif; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -0.7px; line-height: 1.2; margin-bottom: 14px; max-width: 22ch; }
+    .divider { width: 44px; height: 4px; border-radius: 4px; margin-top: 18px; margin-bottom: 36px; }
+    .prose p { color: var(--body); font-size: 1.02rem; line-height: 1.78; max-width: 66ch; margin-bottom: 16px; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--text); font-weight: 600; }
+    .lede { font-size: 1.1rem !important; color: var(--text) !important; }
+    .caption { font-size: 0.82rem; color: var(--muted); line-height: 1.6; max-width: 70ch; margin-top: 16px; }
+    h3 { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; line-height: 1.35; }
+    .block { margin-top: 40px; }
+
+    /* ── Status labels: what is and isn't done ── */
+    .label {
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 100px; border: 1px dashed currentColor;
+    }
+    .label-hyp  { background: var(--violet-bg); color: var(--violet-ink); }
+    .label-plan { background: var(--sky-bg);    color: var(--sky-ink); }
+    .label-demo { background: var(--amber-bg);  color: var(--amber-ink); }
+    .label-tbv  { background: var(--coral-bg);  color: var(--coral-ink); }
+    .label-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    /* ── Hero ── */
+    #hero { padding: 132px 6vw 72px; background: linear-gradient(135deg, #fff0f0 0%, #f0fff8 50%, #f5f0ff 100%); }
+    .hero-kicker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tag { font-size: 0.72rem; font-weight: 600; padding: 5px 12px; border-radius: 100px; background: white; border: 1px solid var(--border); color: var(--body); }
+    .hero-title { font-family: 'Sora', sans-serif; font-size: clamp(2.2rem, 5.2vw, 3.6rem); font-weight: 700; line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 20px; max-width: 16ch; }
+    .hero-sub { font-size: 1.15rem; color: var(--body); max-width: 56ch; line-height: 1.7; margin-bottom: 40px; }
+    .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; background: white; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+    .meta > div { padding: 20px 22px; border-left: 1px solid var(--border); }
+    .meta > div:first-child { border-left: none; }
+    .meta dt { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 4px; }
+    .meta dd { font-size: 0.9rem; font-weight: 500; line-height: 1.5; }
+
+    .honesty { margin-top: 20px; background: white; border: 1px solid var(--border); border-left: 4px solid var(--violet); border-radius: 14px; padding: 20px 24px; }
+    .honesty h2 { font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+    .honesty p { font-size: 0.92rem; color: var(--body); line-height: 1.7; max-width: 80ch; }
+    .legend { display: flex; gap: 8px 18px; flex-wrap: wrap; margin-top: 14px; font-size: 0.8rem; color: var(--muted); list-style: none; }
+    .legend li { display: flex; align-items: center; gap: 8px; }
+
+    .toc { margin-top: 28px; display: flex; gap: 8px; flex-wrap: wrap; list-style: none; }
+    .toc a { display: inline-block; text-decoration: none; font-size: 0.82rem; font-weight: 500; color: var(--body); background: rgba(255,255,255,0.7); border: 1px solid var(--border); border-radius: 100px; padding: 7px 14px; transition: border-color 0.2s, color 0.2s; }
+    .toc a:hover { color: var(--text); border-color: #aaa; }
+
+    /* ── Cards & grids ── */
+    .grid { display: grid; gap: 16px; }
+    .g2 { grid-template-columns: repeat(2, 1fr); }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+    .g4 { grid-template-columns: repeat(4, 1fr); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+    section:nth-of-type(even) .card { background: var(--bg); }
+    .card h3 { margin-bottom: 8px; }
+    .card p, .card li { font-size: 0.88rem; color: var(--body); line-height: 1.65; }
+    .card .de { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; font-family: 'Inter', sans-serif; font-weight: 500; }
+    .plain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .plain-list li { display: flex; gap: 10px; }
+    .plain-list li::before { content: '—'; color: #c4c9d1; flex-shrink: 0; }
+
+    /* Challenge: the questions people actually have */
+    .questions { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .questions li { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 600; line-height: 1.4; padding: 18px 20px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+    .questions li span { display: block; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 400; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+
+    /* Problem framing */
+    .hmw { border-left: 4px solid var(--coral); padding: 6px 0 6px 26px; margin: 8px 0 28px; }
+    .hmw p { font-family: 'Sora', sans-serif; font-size: clamp(1.25rem, 2.6vw, 1.75rem); font-weight: 600; line-height: 1.4; letter-spacing: -0.4px; max-width: 30ch; color: var(--text); }
+
+    /* Hypotheses */
+    .hyp-list { list-style: none; counter-reset: hyp; display: flex; flex-direction: column; gap: 12px; }
+    .hyp { counter-increment: hyp; display: grid; grid-template-columns: 56px 1fr 1fr; gap: 20px; align-items: start; background: var(--violet-bg); border: 1px dashed #c9b8fb; border-radius: 16px; padding: 22px 24px; }
+    .hyp::before { content: 'H' counter(hyp); font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--violet-ink); }
+    .hyp h3 { font-size: 0.98rem; }
+    .hyp dl { font-size: 0.84rem; color: var(--body); line-height: 1.6; }
+    .hyp dt { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--violet-ink); margin-bottom: 2px; }
+    .hyp dd + dt { margin-top: 10px; }
+
+    /* Research questions */
+    .rq { list-style: none; counter-reset: rq; border-top: 1px solid var(--border); }
+    .rq li { counter-increment: rq; display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; line-height: 1.5; }
+    .rq li::before { content: 'RQ' counter(rq); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+    .rq small { font-size: 0.75rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+
+    /* Roadmap / timelines */
+    .timeline { list-style: none; position: relative; display: flex; flex-direction: column; gap: 14px; }
+    .timeline::before { content: ''; position: absolute; left: 17px; top: 10px; bottom: 10px; width: 2px; background: var(--border); }
+    .timeline > li { position: relative; padding-left: 56px; }
+    .t-num { position: absolute; left: 0; top: 18px; width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 2px solid var(--sky); color: var(--sky-ink); font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+    .t-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .t-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .t-facts dt { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 3px; }
+    .t-facts dd { font-size: 0.86rem; color: var(--body); line-height: 1.6; }
+    .timeline.compact > li { padding-left: 56px; padding-top: 6px; padding-bottom: 6px; }
+    .timeline.compact .t-num { top: 4px; border-color: var(--teal); color: var(--teal-ink); }
+    .timeline.compact h3 { margin-bottom: 2px; }
+    .timeline.compact p { font-size: 0.88rem; color: var(--body); max-width: 62ch; }
+
+    /* Ecosystem */
+    .linear { list-style: none; display: grid; grid-template-columns: repeat(6, 1fr); gap: 22px; }
+    .linear li { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 0.82rem; font-weight: 600; line-height: 1.4; }
+    section:nth-of-type(even) .linear li { background: var(--bg); }
+    .linear li + li::before { content: '→'; position: absolute; left: -18px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 400; }
+    .linear li span { display: block; font-weight: 400; color: var(--muted); font-size: 0.76rem; margin-top: 3px; }
+    .actor { border-top: 3px solid var(--teal); }
+
+    /* Journey */
+    .journey { list-style: none; counter-reset: j; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .journey > li { counter-increment: j; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .journey h3::before { content: counter(j) '. '; color: var(--coral-ink); }
+    .journey dt { font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 2px; }
+    .journey dd { font-size: 0.84rem; color: var(--body); line-height: 1.55; }
+    .journey dd + dt { margin-top: 10px; }
+
+    /* Tables */
+    .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+    table { border-collapse: collapse; width: 100%; min-width: 780px; font-size: 0.84rem; }
+    caption { text-align: left; padding: 14px 18px; font-size: 0.8rem; color: var(--muted); border-bottom: 1px solid var(--border); }
+    th, td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    tr:last-child th, tr:last-child td { border-bottom: none; }
+    thead th { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--bg); }
+    tbody th { font-weight: 600; }
+    tbody th span { display: block; font-weight: 400; font-size: 0.76rem; color: var(--muted); }
+    td.empty { color: #9aa1ac; }
+    td { color: var(--body); }
+
+    /* Principles */
+    .principle { position: relative; padding-top: 44px; }
+    .principle .num { position: absolute; top: 18px; left: 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+    .principle .from { display: block; margin-top: 10px; font-size: 0.74rem; color: var(--violet-ink); font-weight: 600; }
+
+    /* ── Concept demo ── */
+    .demo { border: 1px solid var(--border); border-radius: 22px; background: var(--surface); overflow: hidden; }
+    .demo-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 20px; background: var(--bg); border-bottom: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
+    .demo-body { display: grid; grid-template-columns: 0.8fr 1.2fr; }
+    .demo-pane { padding: 26px; min-width: 0; }
+    .demo-pane + .demo-pane { border-left: 1px solid var(--border); }
+    .pane-title { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 18px; }
+    fieldset { border: none; margin-bottom: 22px; }
+    legend { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; }
+    .why-ask { font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chips label { position: relative; cursor: pointer; }
+    .chips input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+    .chips span { display: inline-block; padding: 9px 15px; border-radius: 100px; border: 1.5px solid var(--border); font-size: 0.85rem; font-weight: 500; background: white; transition: border-color 0.15s, background 0.15s; }
+    .chips input:checked + span { border-color: var(--violet-ink); background: var(--violet-bg); color: var(--violet-ink); font-weight: 600; }
+    .chips input:focus-visible + span { outline: 2px solid var(--violet-ink); outline-offset: 3px; }
+    .followup { border-left: 3px solid var(--violet); padding-left: 16px; }
+    .not-asked { font-size: 0.78rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 16px; }
+
+    .dash-head h3 { font-size: 1.25rem; margin-bottom: 4px; }
+    .dash-count { font-size: 0.9rem; color: var(--body); margin-bottom: 10px; }
+    .bar { height: 8px; background: var(--border); border-radius: 8px; overflow: hidden; }
+    .bar > div { height: 100%; background: var(--teal-ink); border-radius: 8px; transition: width 0.3s ease; }
+    .next { margin: 20px 0 24px; padding: 18px 20px; border-radius: 14px; background: var(--teal-bg); border: 1px solid #b8ecd9; }
+    .next .k { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--teal-ink); margin-bottom: 4px; }
+    .next .t { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.05rem; }
+    .next .w { font-size: 0.84rem; color: var(--body); margin-top: 4px; line-height: 1.55; }
+    .group-title { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 20px 0 8px; }
+    .tasks { list-style: none; }
+    .task { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; padding: 13px 0; border-top: 1px solid var(--border); }
+    .task-name { font-size: 0.92rem; font-weight: 600; line-height: 1.4; }
+    .task-name .de { font-weight: 400; color: var(--muted); }
+    .task-sub { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+    .task-sub .blocked-why { color: var(--coral-ink); font-weight: 500; }
+    .task select { font: inherit; font-size: 0.8rem; font-weight: 500; padding: 7px 10px; border-radius: 8px; border: 1.5px solid var(--border); background: white; color: var(--text); max-width: 100%; }
+    .st { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 600; padding: 5px 10px; border-radius: 100px; white-space: nowrap; }
+    .st::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .st-todo    { background: #f1f3f5; color: #495057; }
+    .st-prep    { background: var(--amber-bg); color: var(--amber-ink); }
+    .st-booked  { background: var(--sky-bg); color: var(--sky-ink); }
+    .st-done    { background: var(--teal-bg); color: var(--teal-ink); }
+    .st-blocked { background: var(--coral-bg); color: var(--coral-ink); }
+    .task.is-done .task-name { color: var(--muted); text-decoration: line-through; text-decoration-color: #c4c9d1; }
+
+    .states { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; }
+
+    /* Dependency map */
+    .map { padding: 26px; border-top: 1px solid var(--border); }
+    .map-rows { list-style: none; display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .map-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
+    .map-arrow { color: #b6bcc6; font-size: 1.1rem; line-height: 1; padding: 8px 0; }
+    .node { font: inherit; text-align: left; cursor: pointer; background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; min-width: 170px; max-width: 240px; flex: 1 1 170px; transition: border-color 0.15s, opacity 0.15s, background 0.15s; }
+    .node b { display: block; font-size: 0.86rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+    .node i { display: block; font-style: normal; font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .node.is-sel  { border-color: var(--violet-ink); background: var(--violet-bg); }
+    .node.is-pre  { border-color: var(--coral-ink); border-style: dashed; }
+    .node.is-post { border-color: var(--teal-ink); border-style: dashed; }
+    .node.is-dim  { opacity: 0.7; }
+    .map-explain { margin-top: 20px; padding: 16px 18px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); font-size: 0.9rem; color: var(--body); line-height: 1.65; }
+    .map-explain strong { color: var(--text); }
+    .map-key { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; margin-top: 12px; font-size: 0.76rem; color: var(--muted); }
+    .map-key span { display: inline-block; width: 18px; height: 12px; border-radius: 4px; border: 1.5px dashed; vertical-align: -1px; margin-right: 6px; }
+
+    /* Task detail mock */
+    .detail { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 0; }
+    .detail-main { padding: 28px; min-width: 0; }
+    .detail-side { padding: 28px; border-left: 1px solid var(--border); background: var(--bg); min-width: 0; }
+    .detail h3.big { font-size: 1.35rem; margin: 10px 0 2px; }
+    .detail .sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 20px; }
+    .detail dl > div { padding: 14px 0; border-top: 1px solid var(--border); display: grid; grid-template-columns: 150px 1fr; gap: 14px; }
+    .detail dt { font-size: 0.8rem; font-weight: 600; }
+    .detail dd { font-size: 0.88rem; color: var(--body); line-height: 1.6; }
+    .detail dd ul { padding-left: 18px; }
+    .source { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; font-size: 0.84rem; line-height: 1.55; }
+    .source .k { font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+    .source .ph { color: var(--amber-ink); font-size: 0.78rem; }
+    .disclaimer { margin-top: 16px; padding: 14px 16px; border-radius: 12px; background: var(--amber-bg); border: 1px solid #f3dd9a; font-size: 0.82rem; color: #5c4400; line-height: 1.6; }
+
+    pre { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.7; background: #16181d; color: #dfe3ea; border-radius: 14px; padding: 20px 22px; overflow-x: auto; }
+    pre .c { color: #8b93a1; }
+
+    /* AI */
+    .flow { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+    .flow li { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; font-size: 0.84rem; color: var(--body); line-height: 1.55; }
+    section:nth-of-type(even) .flow li { background: var(--bg); }
+    .flow li b { display: block; color: var(--text); font-size: 0.88rem; margin-bottom: 4px; }
+    .flow li + li::before { content: '→'; position: absolute; left: -18px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .risk { border-top: 3px solid var(--coral); }
+    .help { border-top: 3px solid var(--teal); }
+
+    /* Metrics */
+    .metric dt { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.98rem; margin-bottom: 6px; }
+    .metric dd { font-size: 0.85rem; color: var(--body); line-height: 1.6; }
+    .metric dd.how { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }
+
+    /* Closing */
+    #closing { background: linear-gradient(135deg, #fff0f0 0%, #f5f0ff 50%, #f0fff8 100%); text-align: center; }
+    #closing .section-title, #closing p { margin-left: auto; margin-right: auto; }
+    #closing p { color: var(--body); max-width: 54ch; margin-bottom: 28px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 26px 6vw; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    footer .logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; background: linear-gradient(90deg, var(--coral), var(--violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    footer .copy { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      section { padding: 68px 5vw; }
+      #hero { padding: 112px 5vw 56px; }
+      .meta { grid-template-columns: 1fr 1fr; }
+      .meta > div:nth-child(3) { border-left: none; }
+      .meta > div:nth-child(n+3) { border-top: 1px solid var(--border); }
+      .g3, .g4 { grid-template-columns: 1fr 1fr; }
+      .hyp { grid-template-columns: 44px 1fr; }
+      .hyp dl { grid-column: 2; }
+      .demo-body, .detail { grid-template-columns: 1fr; }
+      .demo-pane + .demo-pane, .detail-side { border-left: none; border-top: 1px solid var(--border); }
+      .linear, .flow { grid-template-columns: 1fr; gap: 26px; }
+      .linear li + li::before, .flow li + li::before { content: '↓'; left: 50%; top: -24px; transform: translateX(-50%); }
+      .t-facts { grid-template-columns: 1fr; gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 52px 5vw; }
+      #hero { padding: 96px 5vw 44px; }
+      nav.site-nav { padding: 0 5vw; }
+      .label { white-space: normal; border-radius: 12px; line-height: 1.45; }
+      .nav-cta { display: none; }
+      .hero-sub { font-size: 1rem; margin-bottom: 28px; }
+      .meta, .g2, .g3, .g4, .questions { grid-template-columns: 1fr; }
+      .meta > div { border-left: none; }
+      .meta > div + div { border-top: 1px solid var(--border); }
+      .divider { margin-bottom: 26px; }
+      .prose p { font-size: 0.97rem; }
+      .rq li { grid-template-columns: 44px 1fr; font-size: 0.94rem; }
+      .rq small { grid-column: 2; }
+      .demo-pane, .map, .detail-main, .detail-side { padding: 20px 18px; }
+      .detail dl > div { grid-template-columns: 1fr; gap: 4px; }
+      .task { grid-template-columns: 1fr; }
+      .task .st { justify-self: start; }
+      .node { min-width: 0; flex-basis: 100%; max-width: none; }
+      .timeline > li { padding-left: 48px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      .btn:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Site">
+  <div class="nav-left">
+    <a class="nav-logo" href="ux-research.html" aria-label="Negin Mousavi — UX research portfolio">NM.</a>
+    <a class="nav-back" href="ux-research.html#work">← All case studies</a>
+  </div>
+  <a href="mailto:negiinmousvi@gmail.com" class="btn btn-primary nav-cta" style="padding:9px 20px;font-size:0.82rem;">Get in touch</a>
+</nav>
+
+<main id="main">
+
+<!-- ─── Hero ─── -->
+<header id="hero">
+  <div class="wrap">
+    <div class="hero-kicker">
+      <span class="tag">UX Research</span>
+      <span class="tag">Product Design</span>
+      <span class="tag">GovTech</span>
+    </div>
+    <h1 class="hero-title">German Bureaucracy Navigator</h1>
+    <p class="hero-sub">Making complex administrative processes easier to understand, navigate, and complete — for people who are new to Germany.</p>
+
+    <dl class="meta">
+      <div><dt>Role</dt><dd>UX Research / Product Design</dd></div>
+      <div><dt>Project type</dt><dd>Independent UX case study</dd></div>
+      <div><dt>Status</dt><dd>Research &amp; concept development</dd></div>
+      <div><dt>Focus</dt><dd>Complex workflows · Information architecture · Accessibility · Multilingual UX</dd></div>
+    </dl>
+
+    <div class="honesty">
+      <h2>Where this project stands</h2>
+      <p>This is a self-initiated project in its early phase. No interviews, surveys, or usability tests have been run yet, so this page contains no findings, quotes, or results. What it does contain is the framing, the research plan, and a first product concept built on stated assumptions. Everything is labelled so it's clear what kind of claim it is:</p>
+      <ul class="legend">
+        <li><span class="label label-hyp">Hypothesis</span> an assumption I hold, not yet tested</li>
+        <li><span class="label label-plan">Planned</span> a study I intend to run</li>
+        <li><span class="label label-tbv">To be validated</span> a design decision awaiting evidence</li>
+        <li><span class="label label-demo">Demo data</span> mock content, not verified guidance</li>
+      </ul>
+    </div>
+
+    <nav aria-label="On this page">
+      <ul class="toc">
+        <li><a href="#challenge">The challenge</a></li>
+        <li><a href="#hypotheses">Hypotheses</a></li>
+        <li><a href="#plan">Research plan</a></li>
+        <li><a href="#journey">Journey</a></li>
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#concept">Product concept</a></li>
+        <li><a href="#ai">AI, carefully</a></li>
+        <li><a href="#metrics">Metrics</a></li>
+        <li><a href="#next">Next steps</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- ─── The challenge ─── -->
+<section id="challenge" aria-labelledby="challenge-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--coral-ink)">The challenge</span>
+    <h2 class="section-title" id="challenge-h">The information exists. The path through it doesn't.</h2>
+    <div class="divider" style="background:var(--coral)"></div>
+
+    <div class="prose">
+      <p class="lede">Moving to Germany comes with a set of administrative tasks: registering an address, arranging health insurance, enrolling at a university, applying for a residence permit, dealing with letters about tax IDs and the broadcasting fee.</p>
+      <p>Most of these are documented somewhere, often well. But each one is documented by the institution that owns it — a city office, an immigration authority, an insurer, a university — and each explains its own step. Nobody is responsible for explaining how the steps fit together for one particular person.</p>
+      <p>So the problem I want to look at isn't missing information. It's that a newcomer has to assemble their own process out of separate sources, usually in a second or third language, while unsure which parts apply to them.</p>
+    </div>
+
+    <div class="block">
+      <h3 style="margin-bottom:14px">The questions a single web page rarely answers</h3>
+      <ul class="questions">
+        <li>What applies to my situation?<span>Requirements differ by citizenship, purpose of stay, city, and timing.</span></li>
+        <li>What should I do first?<span>Some steps need a document that only another step produces.</span></li>
+        <li>What do I need to bring, and where?<span>Document lists and responsible offices are described separately, in official terms.</span></li>
+        <li>What have I done, and what's next?<span>There is no shared record of progress across institutions.</span></li>
+      </ul>
+    </div>
+
+    <div class="block grid g3">
+      <div class="card"><h3>Fragmented sources</h3><p>Each authority covers its own step. The connections between steps are left to the reader.</p></div>
+      <div class="card"><h3>Unfamiliar terminology</h3><p>Terms like <span lang="de">Meldebescheinigung</span> or <span lang="de">Wohnungsgeberbestätigung</span> don't translate cleanly, and translations vary between sites.</p></div>
+      <div class="card"><h3>Hidden dependencies</h3><p>One step may require the output of another. This often only becomes visible at the appointment.</p></div>
+      <div class="card"><h3>Unclear ownership</h3><p>Finding which office is responsible, in which city, is a task in itself.</p></div>
+      <div class="card"><h3>Deadlines</h3><p>Some steps are time-bound, which raises the cost of working out the order by trial and error.</p></div>
+      <div class="card"><h3>No two cases alike</h3><p>A non-EU student and an EU employee face different sets of tasks. Generic checklists fit neither exactly.</p></div>
+    </div>
+    <p class="caption">This is my reading of the problem space from the outside. I'm an international student in Germany myself, which is a reason to treat my own experience as a source of bias to check, not as evidence.</p>
+  </div>
+</section>
+
+<!-- ─── Problem framing ─── -->
+<section id="framing" aria-labelledby="framing-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--violet-ink)">Problem framing</span>
+    <h2 class="section-title" id="framing-h">Starting question</h2>
+    <div class="divider" style="background:var(--violet)"></div>
+
+    <div class="label-row"><span class="label label-hyp">Initial framing — expected to change after research</span></div>
+    <blockquote class="hmw">
+      <p>How might we help newcomers understand which administrative tasks apply to them, what order to complete them in, and what they need for each step?</p>
+    </blockquote>
+
+    <div class="grid g2">
+      <div class="card">
+        <h3>In scope</h3>
+        <ul class="plain-list">
+          <li>Helping someone see their own set of tasks and the order between them</li>
+          <li>Explaining each task in plain language, with the official term kept visible</li>
+          <li>Pointing to the authoritative source for every statement</li>
+          <li>Keeping track of what's done, in progress, and blocked</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Deliberately out of scope</h3>
+        <ul class="plain-list">
+          <li>Legal or immigration advice, or decisions about individual cases</li>
+          <li>Submitting applications or booking appointments on someone's behalf</li>
+          <li>Replacing official portals — the concept sits on top of them and links back</li>
+          <li>Collecting documents or identity data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Target users ─── -->
+<section id="users" aria-labelledby="users-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--teal-ink)">Target users</span>
+    <h2 class="section-title" id="users-h">Who this could be for</h2>
+    <div class="divider" style="background:var(--teal)"></div>
+
+    <div class="prose">
+      <p>These are the groups I intend to recruit from and design for. They are <strong>not</strong> personas and not research participants — I haven't spoken to anyone yet. The point of listing them is that their administrative journeys likely differ, and the product has to handle that difference without asking for more than it needs.</p>
+    </div>
+
+    <div class="block grid g3">
+      <div class="card"><h3>International students</h3><p>Journey likely shaped by enrolment deadlines and the link between health insurance and enrolment.</p></div>
+      <div class="card"><h3>Newly arrived employees</h3><p>Journey likely shaped by a start date, payroll needs such as a tax ID, and sometimes employer support.</p></div>
+      <div class="card"><h3>Researchers</h3><p>Often hosted by an institution with its own welcome service; may sit between the student and employee paths.</p></div>
+      <div class="card"><h3>People immigrating long-term</h3><p>Broader set of tasks, often without an institution acting as a guide.</p></div>
+      <div class="card"><h3>Accompanying partners and family</h3><p>Their steps may depend on someone else's status and paperwork, which adds another layer of dependency.</p></div>
+      <div class="card" style="border-style:dashed"><h3>Open question</h3><p>Which of these groups has the least existing support? That would decide who to design for first. <span class="label label-tbv" style="margin-top:8px">To be validated</span></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Hypotheses ─── -->
+<section id="hypotheses" aria-labelledby="hyp-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--violet-ink)">Initial hypotheses</span>
+    <h2 class="section-title" id="hyp-h">What I currently believe, and how I'd find out</h2>
+    <div class="divider" style="background:var(--violet)"></div>
+
+    <div class="label-row"><span class="label label-hyp">Hypotheses — none of these have been tested</span></div>
+
+    <ol class="hyp-list">
+      <li class="hyp">
+        <h3>Users may struggle more with the sequence of tasks than with finding individual pieces of information.</h3>
+        <dl><dt>Would support it</dt><dd>People describe knowing <em>what</em> a step was but doing things in an order that cost them time.</dd><dt>Would weaken it</dt><dd>People mostly describe not being able to find or understand a single step.</dd></dl>
+      </li>
+      <li class="hyp">
+        <h3>Users may be uncertain whether information applies to their particular situation.</h3>
+        <dl><dt>Would support it</dt><dd>People cross-check the same question across several sources or ask others "is this the same for me?"</dd><dt>Would weaken it</dt><dd>People trust the first official page they find and act on it.</dd></dl>
+      </li>
+      <li class="hyp">
+        <h3>Users may need stronger visibility of prerequisites and dependencies.</h3>
+        <dl><dt>Would support it</dt><dd>Accounts of appointments that failed, or had to be repeated, because something was missing.</dd><dt>Would weaken it</dt><dd>Prerequisites were clear in advance; the difficulty was elsewhere (e.g. getting an appointment).</dd></dl>
+      </li>
+      <li class="hyp">
+        <h3>Users may value seeing progress through the administrative journey.</h3>
+        <dl><dt>Would support it</dt><dd>People already keep their own lists, notes, or folders to track status.</dd><dt>Would weaken it</dt><dd>People treat each task as a one-off and feel no need for an overview.</dd></dl>
+      </li>
+      <li class="hyp">
+        <h3>Users may need both simplified explanations and links back to authoritative sources.</h3>
+        <dl><dt>Would support it</dt><dd>People use informal sources to understand, then go to official ones to confirm.</dd><dt>Would weaken it</dt><dd>People rely on only one kind of source and don't miss the other.</dd></dl>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─── Research questions ─── -->
+<section id="questions" aria-labelledby="rq-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--sky-ink)">Research questions</span>
+    <h2 class="section-title" id="rq-h">What the research needs to answer</h2>
+    <div class="divider" style="background:var(--sky)"></div>
+
+    <ol class="rq">
+      <li>How do newcomers currently organise their administrative tasks? <small>relates to H4</small></li>
+      <li>Which steps create the greatest uncertainty, and why those? <small>H1, H3</small></li>
+      <li>How do people decide whether a piece of information applies to them? <small>H2</small></li>
+      <li>What causes people to lose confidence during a process? <small>H2, H3</small></li>
+      <li>How do language and official terminology affect comprehension? <small>H5</small></li>
+      <li>Which tools, people, or workarounds do they rely on today? <small>H4, H5</small></li>
+      <li>What do people need to know before they feel ready to begin a task? <small>H3</small></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─── Research plan ─── -->
+<section id="plan" aria-labelledby="plan-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--sky-ink)">Research plan</span>
+    <h2 class="section-title" id="plan-h">Five studies, in the order they'd inform each other</h2>
+    <div class="divider" style="background:var(--sky)"></div>
+
+    <div class="prose">
+      <p>The plan moves from understanding to evaluating. The first two studies are about what people actually did; nothing gets designed in detail until those are synthesised. All of it is still ahead.</p>
+    </div>
+
+    <ol class="timeline block">
+      <li>
+        <span class="t-num" aria-hidden="true">1</span>
+        <div class="card">
+          <div class="t-head"><h3>Semi-structured interviews</h3><span class="label label-plan">Planned</span></div>
+          <dl class="t-facts">
+            <div><dt>Purpose</dt><dd>Understand how people approached their first months of paperwork, in their own words. Answers RQ1–RQ6.</dd></div>
+            <div><dt>Proposed setup</dt><dd>5–8 people who arrived in roughly the last two years, mixed across student, employee, and researcher. About 45 minutes each.</dd></div>
+            <div><dt>Output</dt><dd>Transcripts, coded and grouped through affinity mapping into themes.</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="t-num" aria-hidden="true">2</span>
+        <div class="card">
+          <div class="t-head"><h3>Walkthrough of a recent process</h3><span class="label label-plan">Planned</span></div>
+          <dl class="t-facts">
+            <div><dt>Purpose</dt><dd>Recall is unreliable for sequences. Ask participants to retrace one real process using their own emails, notes, and bookmarks.</dd></div>
+            <div><dt>Proposed setup</dt><dd>Part of the interview session, or a follow-up with a subset of participants. Participants choose what to show.</dd></div>
+            <div><dt>Output</dt><dd>Actual task sequences, including detours and repeats, to compare against my assumed journey.</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="t-num" aria-hidden="true">3</span>
+        <div class="card">
+          <div class="t-head"><h3>Comparative analysis</h3><span class="label label-plan">Planned</span></div>
+          <dl class="t-facts">
+            <div><dt>Purpose</dt><dd>See how existing resources handle personalisation, sequence, and sourcing — and where they stop.</dd></div>
+            <div><dt>Proposed setup</dt><dd>Attempt the same three tasks on each resource and record what happens, using the framework further down.</dd></div>
+            <div><dt>Output</dt><dd>A filled-in comparison matrix with evidence per cell.</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="t-num" aria-hidden="true">4</span>
+        <div class="card">
+          <div class="t-head"><h3>Information architecture exercises</h3><span class="label label-plan">Planned</span></div>
+          <dl class="t-facts">
+            <div><dt>Purpose</dt><dd>Check whether people group and order tasks the way the concept does, and which labels they understand.</dd></div>
+            <div><dt>Proposed setup</dt><dd>Card sorting on task names (German term vs. plain description), followed by a tree test on the resulting structure.</dd></div>
+            <div><dt>Output</dt><dd>A revised task structure and naming scheme.</dd></div>
+          </dl>
+        </div>
+      </li>
+      <li>
+        <span class="t-num" aria-hidden="true">5</span>
+        <div class="card">
+          <div class="t-head"><h3>Prototype usability testing</h3><span class="label label-plan">Planned</span></div>
+          <dl class="t-facts">
+            <div><dt>Purpose</dt><dd>Find out whether people can identify their next step, and explain why a step is blocked, using the prototype.</dd></div>
+            <div><dt>Proposed setup</dt><dd>Moderated, task-based sessions with think-aloud. Scenario profiles are assigned so no one has to share their own status.</dd></div>
+            <div><dt>Output</dt><dd>Observed problems ranked by severity, plus the measures listed under proposed metrics.</dd></div>
+          </dl>
+        </div>
+      </li>
+    </ol>
+    <p class="caption">Ethics note for the plan: participation would be voluntary and anonymised, and people would never be asked to show documents or disclose their residence status beyond what they choose to mention.</p>
+  </div>
+</section>
+
+<!-- ─── Ecosystem ─── -->
+<section id="ecosystem" aria-labelledby="eco-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--teal-ink)">Ecosystem</span>
+    <h2 class="section-title" id="eco-h">Not one form. Several institutions, loosely connected.</h2>
+    <div class="divider" style="background:var(--teal)"></div>
+
+    <div class="label-row"><span class="label label-demo">Simplified illustration — not official guidance</span></div>
+    <h3 style="margin-bottom:14px">The version people are usually told</h3>
+    <ol class="linear">
+      <li>Arrival<span>in Germany</span></li>
+      <li>Address<span>housing secured</span></li>
+      <li><span lang="de" style="display:inline;font-size:inherit;color:inherit;font-weight:600">Anmeldung</span><span>address registration</span></li>
+      <li>Residence<span>permit-related steps</span></li>
+      <li>Setup<span>bank, insurance, university, employment</span></li>
+      <li>Ongoing<span>further obligations</span></li>
+    </ol>
+
+    <div class="prose block">
+      <p>A line like this is a useful first orientation, and it is also misleading. Steps branch depending on who you are, some run in parallel, and each belongs to a different organisation with its own website, vocabulary, and appointment system. Actual requirements vary by person and by place.</p>
+    </div>
+
+    <h3 class="block" style="margin-bottom:14px">Who typically owns what</h3>
+    <div class="grid g4">
+      <div class="card actor"><h3>City registration office<span class="de" lang="de">Bürgeramt / Einwohnermeldeamt</span></h3><p>Address registration and the certificate that confirms it.</p></div>
+      <div class="card actor"><h3>Immigration office<span class="de" lang="de">Ausländerbehörde</span></h3><p>Residence permits and related questions for non-EU nationals.</p></div>
+      <div class="card actor"><h3>Health insurer<span class="de" lang="de">Krankenkasse</span></h3><p>Insurance cover and the proof of it that other institutions ask for.</p></div>
+      <div class="card actor"><h3>University<span class="de" lang="de">Studierendensekretariat</span></h3><p>Enrolment, and often an international office that offers guidance.</p></div>
+      <div class="card actor"><h3>Tax authorities<span class="de" lang="de">Finanzamt / BZSt</span></h3><p>Tax identification number, which employers need for payroll.</p></div>
+      <div class="card actor"><h3>Broadcasting fee service<span class="de" lang="de">Beitragsservice</span></h3><p>The household broadcasting contribution (<span lang="de">Rundfunkbeitrag</span>).</p></div>
+      <div class="card actor"><h3>Employer or host institute</h3><p>Contract, and sometimes onboarding or relocation support.</p></div>
+      <div class="card actor"><h3>Landlord and bank</h3><p>Private actors whose documents the public processes depend on.</p></div>
+    </div>
+    <p class="caption">Office names and responsibilities differ between cities and federal states. Mapping this properly for one pilot city is part of the comparative analysis.</p>
+  </div>
+</section>
+
+<!-- ─── Journey ─── -->
+<section id="journey" aria-labelledby="journey-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--coral-ink)">Current journey</span>
+    <h2 class="section-title" id="journey-h">How I assume a single task unfolds today</h2>
+    <div class="divider" style="background:var(--coral)"></div>
+
+    <div class="label-row"><span class="label label-hyp">Initial journey hypothesis — to be validated through research</span></div>
+    <div class="prose">
+      <p>This is a starting sketch to argue with, not a journey map built from data. The "assumed friction" row is where I expect to be corrected by the interviews and walkthroughs.</p>
+    </div>
+
+    <ol class="journey block">
+      <li><h3>Discover the requirement</h3><dl><dt>Trying to</dt><dd>Find out that a task exists at all.</dd><dt>Assumed friction</dt><dd>Learning about it late, or second-hand.</dd><dt>To ask in research</dt><dd>How did you first hear about it?</dd></dl></li>
+      <li><h3>Search for information</h3><dl><dt>Trying to</dt><dd>Find a trustworthy description.</dd><dt>Assumed friction</dt><dd>Several sources that don't quite agree.</dd><dt>To ask in research</dt><dd>Where did you look first, and why there?</dd></dl></li>
+      <li><h3>Determine applicability</h3><dl><dt>Trying to</dt><dd>Work out whether it applies in their case.</dd><dt>Assumed friction</dt><dd>Generic wording; exceptions unclear.</dd><dt>To ask in research</dt><dd>What made you sure — or unsure?</dd></dl></li>
+      <li><h3>Gather documents</h3><dl><dt>Trying to</dt><dd>Collect everything needed.</dd><dt>Assumed friction</dt><dd>A document that depends on another step.</dd><dt>To ask in research</dt><dd>Was anything missing on the day?</dd></dl></li>
+      <li><h3>Book an appointment</h3><dl><dt>Trying to</dt><dd>Get a slot at the right office.</dd><dt>Assumed friction</dt><dd>Finding the right office and booking system.</dd><dt>To ask in research</dt><dd>How did you know where to go?</dd></dl></li>
+      <li><h3>Complete the process</h3><dl><dt>Trying to</dt><dd>Get through the appointment or form.</dd><dt>Assumed friction</dt><dd>Language at the counter; unfamiliar forms.</dd><dt>To ask in research</dt><dd>What happened that you didn't expect?</dd></dl></li>
+      <li><h3>Determine the next task</h3><dl><dt>Trying to</dt><dd>Understand what this step unlocked.</dd><dt>Assumed friction</dt><dd>No one says what comes next.</dd><dt>To ask in research</dt><dd>How did you find out what to do after?</dd></dl></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─── Landscape ─── -->
+<section id="landscape" aria-labelledby="land-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--amber-ink)">Comparative landscape</span>
+    <h2 class="section-title" id="land-h">A framework for the comparison, before the comparison</h2>
+    <div class="divider" style="background:var(--amber)"></div>
+
+    <div class="label-row"><span class="label label-plan">Planned — matrix intentionally empty</span></div>
+    <div class="prose">
+      <p>I've set up the dimensions first so the review is consistent across very different kinds of resource. The cells are empty because the analysis hasn't been done; filling them with impressions would defeat the purpose.</p>
+    </div>
+
+    <div class="table-scroll block" role="region" aria-label="Comparison framework, scrollable" tabindex="0">
+      <table>
+        <caption>Each cell will be rated absent / partial / strong, with a note on the evidence.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Resource type</th>
+            <th scope="col">Personal&shy;isation</th>
+            <th scope="col">Process guidance</th>
+            <th scope="col">Multi&shy;lingual support</th>
+            <th scope="col">Progress tracking</th>
+            <th scope="col">Source trans&shy;parency</th>
+            <th scope="col">Access&shy;ibility</th>
+            <th scope="col">Dependency visual&shy;isation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Official government portals<span>federal and state level</span></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+          <tr><th scope="row">City websites<span>service pages of a pilot city</span></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+          <tr><th scope="row">University international offices<span>arrival guides and checklists</span></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+          <tr><th scope="row">Relocation services<span>commercial, assisted</span></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+          <tr><th scope="row">Expat information platforms<span>guides, forums, communities</span></th><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption">"—" means not yet assessed. Specific resources in each category will be selected and named when the review is carried out.</p>
+  </div>
+</section>
+
+<!-- ─── Principles ─── -->
+<section id="principles" aria-labelledby="prin-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--violet-ink)">Design principles</span>
+    <h2 class="section-title" id="prin-h">Eight working principles</h2>
+    <div class="divider" style="background:var(--violet)"></div>
+
+    <div class="label-row"><span class="label label-tbv">Derived from the framing, not from findings — to be validated</span></div>
+
+    <div class="grid g4">
+      <div class="card principle"><span class="num">01</span><h3>Show the next action, not everything at once.</h3><p>A full list of obligations is accurate and overwhelming. Lead with one step; keep the rest one tap away.</p><span class="from">From H1</span></div>
+      <div class="card principle"><span class="num">02</span><h3>Explain why a task matters.</h3><p>People are more likely to act on a step when they know what it unlocks or what happens without it.</p><span class="from">From H3</span></div>
+      <div class="card principle"><span class="num">03</span><h3>Make dependencies visible.</h3><p>If something can't be done yet, say what it's waiting on, in a sentence.</p><span class="from">From H3</span></div>
+      <div class="card principle"><span class="num">04</span><h3>Keep authoritative sources accessible.</h3><p>A simplified explanation is a way in, never a replacement. The official page is always linked.</p><span class="from">From H5</span></div>
+      <div class="card principle"><span class="num">05</span><h3>Separate required from recommended.</h3><p>Mixing obligations with tips makes both harder to trust.</p><span class="from">From H2</span></div>
+      <div class="card principle"><span class="num">06</span><h3>Never hide uncertainty.</h3><p>Where a rule varies or the content may be out of date, say so plainly instead of sounding confident.</p><span class="from">From H2</span></div>
+      <div class="card principle"><span class="num">07</span><h3>Design for multilingual comprehension.</h3><p>Keep the German term next to its explanation; that's the word on the form and at the counter.</p><span class="from">From H5</span></div>
+      <div class="card principle"><span class="num">08</span><h3>Minimise personal data.</h3><p>Ask only what changes the journey, explain why it's asked, and don't keep it longer than needed.</p><span class="from">Constraint</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Product concept ─── -->
+<section id="concept" aria-labelledby="concept-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--teal-ink)">Product concept</span>
+    <h2 class="section-title" id="concept-h">A structured journey, not a chatbot</h2>
+    <div class="divider" style="background:var(--teal)"></div>
+
+    <div class="prose">
+      <p class="lede">The concept has four parts: a short onboarding, a personal dashboard, a detail page per task, and a view of how tasks depend on each other.</p>
+      <p>I chose structure over conversation on purpose. The core need, as framed, is orientation: seeing the whole, knowing where you are in it. A list with states can be scanned, returned to, and checked against a source. A chat answer can't, and it's harder to tell when it's wrong.</p>
+      <p>The demo below is a working sketch of that idea. Change the answers on the left and the journey on the right recalculates.</p>
+    </div>
+
+    <div class="demo block" id="demo">
+      <div class="demo-bar">
+        <span>Interactive concept sketch</span>
+        <span class="label label-demo">Demo data — nothing you select is stored or sent</span>
+      </div>
+      <div class="demo-body">
+
+        <form class="demo-pane" id="onboarding" aria-labelledby="ob-title">
+          <p class="pane-title" id="ob-title">1 · Onboarding</p>
+
+          <fieldset>
+            <legend>What brings you to Germany?</legend>
+            <p class="why-ask">Why we ask: study, work, and family routes involve different steps.</p>
+            <div class="chips">
+              <label><input type="radio" name="purpose" value="study" checked><span>Study</span></label>
+              <label><input type="radio" name="purpose" value="work"><span>Work</span></label>
+              <label><input type="radio" name="purpose" value="research"><span>Research</span></label>
+              <label><input type="radio" name="purpose" value="family"><span>Joining family</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="followup" id="q-enrolled">
+            <legend>Have you completed enrolment at your university?</legend>
+            <p class="why-ask">Only asked because you chose "Study".</p>
+            <div class="chips">
+              <label><input type="radio" name="enrolled" value="no" checked><span>Not yet</span></label>
+              <label><input type="radio" name="enrolled" value="yes"><span>Yes</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Are you an EU/EEA or Swiss citizen?</legend>
+            <p class="why-ask">Why we ask: it decides whether residence-permit steps appear. We don't ask for your nationality.</p>
+            <div class="chips">
+              <label><input type="radio" name="eu" value="non-eu" checked><span>No</span></label>
+              <label><input type="radio" name="eu" value="eu"><span>Yes</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Do you already have a place to live?</legend>
+            <p class="why-ask">Why we ask: several steps can't start without an address.</p>
+            <div class="chips">
+              <label><input type="radio" name="address" value="no" checked><span>Not yet</span></label>
+              <label><input type="radio" name="address" value="yes"><span>Yes</span></label>
+            </div>
+          </fieldset>
+
+          <p class="not-asked">Not asked: name, exact nationality, address, passport or visa details. In the full concept a city would be chosen too, since offices and sources are local.</p>
+        </form>
+
+        <div class="demo-pane" aria-labelledby="dash-title">
+          <p class="pane-title" id="dash-title">2 · Personal dashboard</p>
+          <div id="dashboard"><noscript>The interactive demo needs JavaScript. The sections below describe the same concept in text.</noscript></div>
+        </div>
+      </div>
+
+      <div class="map" aria-labelledby="map-title">
+        <p class="pane-title" id="map-title">3 · Dependency view</p>
+        <p style="font-size:0.88rem;color:var(--body);margin-bottom:18px;max-width:70ch">Select a step to see what it's waiting on and what it unlocks. The relationship is always stated in words as well, so it doesn't depend on reading the diagram.</p>
+        <div id="map"></div>
+        <p class="map-explain" id="map-explain" aria-live="polite"></p>
+        <ul class="map-key" aria-hidden="true">
+          <li><span style="border-color:var(--coral-ink)"></span>needed first</li>
+          <li><span style="border-color:var(--violet-ink);border-style:solid;background:var(--violet-bg)"></span>selected</li>
+          <li><span style="border-color:var(--teal-ink)"></span>unlocked by it</li>
+        </ul>
+      </div>
+    </div>
+    <p class="caption">The steps and dependencies in this demo are simplified examples chosen to show the interaction. They are not a verified description of German administrative requirements.</p>
+
+    <div class="block grid g2">
+      <div class="card">
+        <h3>Progress states</h3>
+        <p style="margin-bottom:14px">Four states a person sets themselves, and one the system derives.</p>
+        <ul class="states">
+          <li><span class="st st-todo">Not started</span></li>
+          <li><span class="st st-prep">Preparing</span></li>
+          <li><span class="st st-booked">Appointment booked</span></li>
+          <li><span class="st st-done">Completed</span></li>
+          <li><span class="st st-blocked">Blocked</span></li>
+        </ul>
+        <p style="margin-top:14px">"Blocked" isn't selectable. It appears when a prerequisite is unfinished and always names it, so the state explains itself. Whether "Preparing" and "Appointment booked" are the right intermediate states is a question for the walkthroughs. <span class="label label-tbv" style="margin-top:8px">To be validated</span></p>
+      </div>
+      <div class="card">
+        <h3>Decisions I can defend, and their cost</h3>
+        <ul class="plain-list">
+          <li><span><strong>One next step</strong> on top. Cost: people who want to plan ahead need the full list, so it stays visible below.</span></li>
+          <li><span><strong>Required and recommended are separate lists.</strong> Cost: the boundary is sometimes fuzzy and has to be decided per task.</span></li>
+          <li><span><strong>Reasons shown beside each question.</strong> Cost: longer onboarding screens, in exchange for trust.</span></li>
+          <li><span><strong>Coarse profile only.</strong> Cost: less precise journeys; some cases will need "check with the office" instead of an answer.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Task detail -->
+    <h3 class="block" style="font-size:1.15rem;margin-bottom:6px">4 · Task detail</h3>
+    <p style="font-size:0.92rem;color:var(--body);max-width:66ch;margin-bottom:18px">Every task follows the same template, so people learn where to look. Sources sit beside the content instead of at the bottom of the page.</p>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <span>Static mockup</span>
+        <span class="label label-demo">Illustrative content — not verified guidance</span>
+      </div>
+      <div class="detail">
+        <div class="detail-main">
+          <span class="st st-todo">Not started</span>
+          <h3 class="big">Register your address</h3>
+          <p class="sub"><span lang="de">Anmeldung</span> · Required</p>
+          <dl>
+            <div><dt>What this is</dt><dd>Telling the city you live in where your home address is.</dd></div>
+            <div><dt>Why you may need it</dt><dd>You receive a registration certificate (<span lang="de">Meldebescheinigung</span>) that other steps in your journey commonly ask for.</dd></div>
+            <div><dt>When to do it</dt><dd>Typically within two weeks of moving in. Confirm the deadline with your city.</dd></div>
+            <div><dt>What you need</dt><dd><ul><li>Passport or ID</li><li>Landlord confirmation (<span lang="de">Wohnungsgeberbestätigung</span>)</li><li>Registration form, if your city uses one</li></ul></dd></div>
+            <div><dt>Where to do it</dt><dd>The registration office of your city (<span lang="de">Bürgeramt</span> or <span lang="de">Einwohnermeldeamt</span>), usually by appointment.</dd></div>
+            <div><dt>Prerequisites</dt><dd>An address, and the landlord confirmation for it.</dd></div>
+            <div><dt>What happens afterward</dt><dd>You get the certificate at the appointment. Further letters, such as your tax ID, may follow by post.</dd></div>
+          </dl>
+        </div>
+        <aside class="detail-side" aria-label="Sources for this task">
+          <p class="pane-title">Official sources</p>
+          <div class="source"><span class="k">Official source</span><br><strong>City registration office page</strong><br>e.g. the service page of the selected city<br><span class="ph">Link placeholder</span></div>
+          <div class="source"><span class="k">Legal basis</span><br><strong>Federal Registration Act</strong> (<span lang="de">Bundesmeldegesetz</span>)<br><span class="ph">Link placeholder</span></div>
+          <div class="source"><span class="k">Last checked</span><br><span class="ph">— demo placeholder; no real verification has taken place</span></div>
+          <p class="disclaimer"><strong>Requirements can vary</strong> by city and personal situation, and they change over time. This is general orientation, not legal advice. Please verify with the official source before you act.</p>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Data model -->
+    <div class="block grid g2" style="align-items:start">
+      <div class="prose">
+        <h3 style="font-size:1.15rem;margin-bottom:10px">Underneath: tasks as structured data</h3>
+        <p>The demo runs on a small rule model. Each task records when it applies, what it requires, who owns it, and where its content comes from. The dashboard, the blocked states, and the dependency view are all computed from that one structure.</p>
+        <p>This matters for feasibility more than for the interface. Content is the expensive part of this product: someone has to maintain each task per city and re-check its sources. Making <code>sources</code> and <code>lastChecked</code> required fields means a task without a verified source can't be published.</p>
+      </div>
+      <pre aria-label="Example task record"><span class="c">// one task, as the demo models it</span>
+{
+  id: "residence-permit",
+  title: "Apply for a residence permit",
+  kind: "required",
+  appliesWhen: { euCitizen: false },
+  requires: ["anmeldung", "health-insurance"],
+  authority: "Immigration office",
+  sources: [ <span class="c">/* official URLs */</span> ],
+  lastChecked: null  <span class="c">// placeholder</span>
+}</pre>
+    </div>
+
+    <div class="block">
+      <h3 style="margin-bottom:14px">Constraints and edge cases I'm aware of</h3>
+      <div class="grid g3">
+        <div class="card"><h3>Content upkeep</h3><p>Rules change and differ locally. The realistic first version covers one city and a handful of tasks, done properly.</p></div>
+        <div class="card"><h3>Situations that change</h3><p>A student becomes an employee; a partner arrives later. The journey has to be editable without starting over.</p></div>
+        <div class="card"><h3>Cases the model can't express</h3><p>Some situations won't fit the questions. The product should say "we can't tell — ask this office" instead of guessing.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI ─── -->
+<section id="ai" aria-labelledby="ai-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--sky-ink)">Future opportunity</span>
+    <h2 class="section-title" id="ai-h">Where AI could help, and where it shouldn't decide</h2>
+    <div class="divider" style="background:var(--sky)"></div>
+
+    <div class="label-row"><span class="label label-hyp">Exploration — not part of the core concept</span></div>
+    <div class="prose">
+      <p>My background is in computer science and AI, so it would be easy to make this an AI product. I don't think it should be one. The journey itself needs to be deterministic and checkable. Language models are a possible layer on top for one thing they're good at: making dense official text easier to read.</p>
+    </div>
+
+    <div class="block grid g2">
+      <div class="card help">
+        <h3>Where it could help</h3>
+        <ul class="plain-list">
+          <li>Rephrasing an official paragraph in simpler language, next to the original</li>
+          <li>Explaining a German administrative term in the user's language</li>
+          <li>Answering a question using passages retrieved from official sources</li>
+          <li>Summarising the documents a source page lists</li>
+          <li>Explaining why a step appears in someone's journey, based on the rule that triggered it</li>
+        </ul>
+      </div>
+      <div class="card risk">
+        <h3>What could go wrong</h3>
+        <ul class="plain-list">
+          <li><span><strong>Hallucination.</strong> A fluent, wrong answer about a deadline or document.</span></li>
+          <li><span><strong>Outdated information.</strong> A model's own knowledge has no date on it.</span></li>
+          <li><span><strong>Real consequences.</strong> A missed deadline or failed appointment costs the user, not the product.</span></li>
+          <li><span><strong>Privacy.</strong> People may type sensitive details about their status into a free-text box.</span></li>
+          <li><span><strong>Source reliability.</strong> Retrieval is only as good as the set of sources it searches.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="block" style="margin-bottom:14px">The approach I'd propose: grounded in sources, or silent</h3>
+    <ol class="flow">
+      <li><b>1 · Question</b>Asked in the context of a specific task, not an open chat.</li>
+      <li><b>2 · Retrieve</b>Search only a curated, dated set of official sources.</li>
+      <li><b>3 · Answer with evidence</b>Show the quoted passage, its link, and when it was last checked.</li>
+      <li><b>4 · Or decline</b>If nothing relevant is found, say so and point to the responsible office.</li>
+    </ol>
+    <p class="caption">The model explains and translates; it never adds or removes steps from a journey. That stays with the rule model, where a person can review it. Whether simplified text actually improves comprehension, or just confidence, would need its own study.</p>
+  </div>
+</section>
+
+<!-- ─── Privacy & trust ─── -->
+<section id="trust" aria-labelledby="trust-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--teal-ink)">Privacy &amp; trust</span>
+    <h2 class="section-title" id="trust-h">Sensitive situations need a cautious product</h2>
+    <div class="divider" style="background:var(--teal)"></div>
+
+    <div class="prose">
+      <p>Residence status, family situation, and employment are things people have good reason to be careful with. A tool in this space earns trust by asking for little and being open about what it knows and doesn't.</p>
+    </div>
+
+    <div class="block grid g3">
+      <div class="card"><h3>Data minimisation</h3><p>A handful of coarse answers is enough to shape a journey. No names, document numbers, or uploads.</p></div>
+      <div class="card"><h3>No unnecessary storage</h3><p>Proposed default: the profile and progress stay on the person's device, with no account required.</p></div>
+      <div class="card"><h3>Transparency</h3><p>Every question states why it's asked. Every step can show which answer caused it to appear.</p></div>
+      <div class="card"><h3>Authoritative sourcing</h3><p>Each statement links to the official source and shows when it was last checked.</p></div>
+      <div class="card"><h3>Communicating uncertainty</h3><p>"Typically", "varies by city", and "we can't tell" are valid outputs. Stale content is flagged, not hidden.</p></div>
+      <div class="card"><h3>Accessibility and language</h3><p>Plain language, keyboard and screen-reader support, and translated explanations with the German term kept alongside.</p></div>
+    </div>
+    <p class="caption">These are design intentions. A real service would also need a proper data-protection review, which is outside what a concept study can claim.</p>
+  </div>
+</section>
+
+<!-- ─── Metrics ─── -->
+<section id="metrics" aria-labelledby="metrics-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--amber-ink)">Proposed metrics</span>
+    <h2 class="section-title" id="metrics-h">What I would measure</h2>
+    <div class="divider" style="background:var(--amber)"></div>
+
+    <div class="label-row"><span class="label label-plan">Proposed measures — no results exist yet</span></div>
+    <div class="prose">
+      <p>There are no numbers here because nothing has been measured. Targets would be set after a baseline with existing resources, so the comparison means something.</p>
+    </div>
+
+    <dl class="block grid g3">
+      <div class="card metric"><dt>Task completion</dt><dd>Can people finish a scenario task with the prototype, unaided?</dd><dd class="how">Usability test · share of participants completing each task</dd></div>
+      <div class="card metric"><dt>Time to next step</dt><dd>How long until someone correctly names what they should do next?</dd><dd class="how">Usability test · timed from scenario start</dd></div>
+      <div class="card metric"><dt>Comprehension</dt><dd>After reading a task page, can they say what to bring and where to go?</dd><dd class="how">Short recall questions after each task</dd></div>
+      <div class="card metric"><dt>Dependency understanding</dt><dd>Can they explain why a step is blocked and what would unblock it?</dd><dd class="how">Asked aloud · scored against the rule model</dd></div>
+      <div class="card metric"><dt>Navigation detours</dt><dd>How many screens were visited that weren't needed for the task?</dd><dd class="how">Session recordings · steps beyond the shortest path</dd></div>
+      <div class="card metric"><dt>Errors</dt><dd>Wrong step chosen, wrong office named, document missed.</dd><dd class="how">Observed during sessions · counted per task</dd></div>
+      <div class="card metric"><dt>Confidence</dt><dd>How sure do people feel that they know what to do — and does it match being right?</dd><dd class="how">Self-rating per task, compared with correctness</dd></div>
+      <div class="card metric"><dt>Source use</dt><dd>Do people notice and open the official source when it matters?</dd><dd class="how">Observation · whether sources were consulted</dd></div>
+      <div class="card metric" style="border-style:dashed"><dt>A caution</dt><dd>Confidence without correctness would be a failure, not a success. The two are read together.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ─── Next steps ─── -->
+<section id="next" aria-labelledby="next-h">
+  <div class="wrap">
+    <span class="section-tag" style="color:var(--teal-ink)">Future research</span>
+    <h2 class="section-title" id="next-h">What happens next</h2>
+    <div class="divider" style="background:var(--teal)"></div>
+
+    <div class="prose">
+      <p>The project is unfinished on purpose: the concept above is a hypothesis in the shape of an interface. These are the steps that would turn it into something supported by evidence. This page will be updated as each one is done.</p>
+    </div>
+
+    <ol class="timeline compact block">
+      <li><span class="t-num" aria-hidden="true">1</span><h3>Conduct 5–8 exploratory interviews</h3><p>Including a walkthrough of one recent process per participant.</p></li>
+      <li><span class="t-num" aria-hidden="true">2</span><h3>Synthesise recurring pain points</h3><p>Affinity mapping, then revisit each hypothesis: supported, weakened, or replaced.</p></li>
+      <li><span class="t-num" aria-hidden="true">3</span><h3>Complete the comparative analysis</h3><p>Fill in the matrix with evidence for one pilot city.</p></li>
+      <li><span class="t-num" aria-hidden="true">4</span><h3>Validate the information architecture</h3><p>Card sorting and tree testing on task grouping and naming.</p></li>
+      <li><span class="t-num" aria-hidden="true">5</span><h3>Prototype the core journey</h3><p>Onboarding, dashboard, one task in full depth, and the dependency view.</p></li>
+      <li><span class="t-num" aria-hidden="true">6</span><h3>Run usability tests and iterate</h3><p>Moderated sessions with scenario profiles; fix the most severe problems and test again.</p></li>
+      <li><span class="t-num" aria-hidden="true">7</span><h3>Explore multilingual comprehension</h3><p>Compare German term only, translation only, and both together.</p></li>
+      <li><span class="t-num" aria-hidden="true">8</span><h3>Validate source-transparency patterns</h3><p>Do "official source" and "last checked" change what people trust and verify?</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─── Closing ─── -->
+<section id="closing" aria-labelledby="closing-h">
+  <div class="wrap">
+    <h2 class="section-title" id="closing-h" style="max-width:26ch">Recently moved to Germany, or working on public services?</h2>
+    <p>I'm looking for people willing to talk about their experience, and for feedback on the research plan.</p>
+    <div class="cta">
+      <a href="mailto:negiinmousvi@gmail.com" class="btn btn-primary">Get in touch</a>
+      <a href="ux-research.html#work" class="btn btn-ghost">← All case studies</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="logo">Negin Mousavi</div>
+  <div class="copy">© 2026 · Kaiserslautern, Germany</div>
+</footer>
+
+<script>
+(function () {
+  // Demo rule model. Simplified examples, not verified administrative guidance.
+  var TASKS = [
+    { id: 'housing', title: 'Secure a place to live', kind: 'required', authority: 'Landlord or housing provider', requires: [], when: function () { return true; },
+      why: 'An address is the starting point for registration.' },
+    { id: 'landlord', title: 'Get your landlord confirmation', de: 'Wohnungsgeberbestätigung', kind: 'required', authority: 'Landlord', requires: ['housing'], when: function () { return true; },
+      why: 'The registration office asks for this document.' },
+    { id: 'insurance', title: 'Arrange health insurance', de: 'Krankenversicherung', kind: 'required', authority: 'Health insurer', requires: [], when: function () { return true; },
+      why: 'Other institutions ask for proof of cover.' },
+    { id: 'anmeldung', title: 'Register your address', de: 'Anmeldung', kind: 'required', authority: 'City registration office', requires: ['landlord'], when: function () { return true; },
+      timing: 'Typically within two weeks of moving in', why: 'The registration certificate is needed for later steps.' },
+    { id: 'enrol', title: 'Complete university enrolment', de: 'Immatrikulation', kind: 'required', authority: 'University', requires: ['insurance'], when: function (p) { return p.purpose === 'study'; },
+      timing: 'By your university’s enrolment deadline', why: 'Enrolment usually requires proof of health insurance.' },
+    { id: 'permit', title: 'Apply for a residence permit', de: 'Aufenthaltstitel', kind: 'required', authority: 'Immigration office', requires: ['anmeldung', 'insurance'], when: function (p) { return p.eu === 'non-eu'; },
+      timing: 'Before your entry visa expires', why: 'Lets you stay beyond your entry visa.' },
+    { id: 'taxid', title: 'Receive your tax ID by post', de: 'Steuer-ID', kind: 'required', authority: 'Federal tax office', requires: ['anmeldung'], when: function (p) { return p.purpose === 'work' || p.purpose === 'research'; },
+      why: 'Your employer needs it for payroll. It is sent after registration.' },
+    { id: 'rundfunk', title: 'Set up the broadcasting fee', de: 'Rundfunkbeitrag', kind: 'required', authority: 'Broadcasting fee service', requires: ['housing'], when: function () { return true; },
+      why: 'Charged per household. You are usually contacted by post.' },
+    { id: 'bank', title: 'Open a bank account', kind: 'recommended', authority: 'Bank of your choice', requires: [], when: function () { return true; },
+      why: 'Useful for rent and salary. Some banks ask for proof of registration.' }
+  ];
+  var STATUS = { todo: 'Not started', prep: 'Preparing', booked: 'Appointment booked', done: 'Completed' };
+  var byId = {};
+  TASKS.forEach(function (t) { byId[t.id] = t; });
+
+  var form = document.getElementById('onboarding');
+  var dash = document.getElementById('dashboard');
+  var map = document.getElementById('map');
+  var explain = document.getElementById('map-explain');
+  var followup = document.getElementById('q-enrolled');
+  if (!form || !dash || !map) return;
+
+  var profile = { purpose: 'study', enrolled: 'no', eu: 'non-eu', address: 'no' };
+  var status = {};
+  TASKS.forEach(function (t) { status[t.id] = 'todo'; });
+  var selected = 'anmeldung';
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function name(t) { return esc(t.title) + (t.de ? ' <span class="de" lang="de">(' + esc(t.de) + ')</span>' : ''); }
+  function active() { return TASKS.filter(function (t) { return t.when(profile); }); }
+  function isActive(id) { return byId[id].when(profile); }
+  function waitingOn(t) { return t.requires.filter(function (id) { return isActive(id) && status[id] !== 'done'; }); }
+  function depth(t) { return t.requires.length ? 1 + Math.max.apply(null, t.requires.map(function (id) { return depth(byId[id]); })) : 0; }
+  function titles(ids) { return ids.map(function (id) { return '<strong>' + esc(byId[id].title) + '</strong>'; }).join(' and '); }
+
+  function taskRow(t) {
+    var wait = status[t.id] === 'done' ? [] : waitingOn(t);
+    var control;
+    if (wait.length) {
+      control = '<span class="st st-blocked">Blocked</span>';
+    } else {
+      control = '<label class="sr-only" for="st-' + t.id + '">Status for ' + esc(t.title) + '</label><select id="st-' + t.id + '" data-task="' + t.id + '">' +
+        Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (status[t.id] === k ? ' selected' : '') + '>' + STATUS[k] + '</option>'; }).join('') + '</select>';
+    }
+    var sub = wait.length
+      ? '<span class="blocked-why">Can’t be completed until: ' + wait.map(function (id) { return esc(byId[id].title); }).join(', ') + '.</span>'
+      : esc(t.authority) + (t.timing ? ' · ' + esc(t.timing) + ' (verify locally)' : '');
+    return '<li class="task' + (status[t.id] === 'done' ? ' is-done' : '') + '"><span class="task-name">' + name(t) + '</span>' + control + '<span class="task-sub">' + sub + '</span></li>';
+  }
+
+  function renderDash() {
+    var list = active();
+    var req = list.filter(function (t) { return t.kind === 'required'; });
+    var rec = list.filter(function (t) { return t.kind !== 'required'; });
+    var done = req.filter(function (t) { return status[t.id] === 'done'; }).length;
+    var next = req.filter(function (t) { return status[t.id] !== 'done' && !waitingOn(t).length; })[0];
+    var pct = req.length ? Math.round(done / req.length * 100) : 0;
+
+    dash.innerHTML =
+      '<div class="dash-head"><h3>Your Germany setup</h3>' +
+      '<p class="dash-count" aria-live="polite">' + done + ' of ' + req.length + ' required steps completed</p>' +
+      '<div class="bar" role="progressbar" aria-label="Required steps completed" aria-valuemin="0" aria-valuemax="' + req.length + '" aria-valuenow="' + done + '"><div style="width:' + pct + '%"></div></div></div>' +
+      '<div class="next"><p class="k">' + (next ? 'Next recommended step' : 'All required steps completed') + '</p>' +
+      (next ? '<p class="t">' + name(next) + '</p><p class="w">' + esc(next.why) + '</p>' : '<p class="w">Nothing is waiting on you in this demo journey.</p>') + '</div>' +
+      '<p class="group-title">Required</p><ul class="tasks">' + req.map(taskRow).join('') + '</ul>' +
+      (rec.length ? '<p class="group-title">Recommended, not required</p><ul class="tasks">' + rec.map(taskRow).join('') + '</ul>' : '');
+  }
+
+  function renderMap() {
+    var list = active().filter(function (t) { return t.kind === 'required'; });
+    if (!list.some(function (t) { return t.id === selected; })) selected = 'anmeldung';
+    var sel = byId[selected];
+    var pre = sel.requires.filter(isActive);
+    var post = list.filter(function (t) { return t.requires.indexOf(selected) !== -1; }).map(function (t) { return t.id; });
+    var rows = [];
+    list.forEach(function (t) { var d = depth(t); (rows[d] = rows[d] || []).push(t); });
+
+    map.innerHTML = '<ol class="map-rows">' + rows.map(function (row, i) {
+      return (i ? '<li class="map-arrow" aria-hidden="true">↓</li>' : '') + '<li class="map-row">' + row.map(function (t) {
+        var cls = t.id === selected ? 'is-sel' : pre.indexOf(t.id) !== -1 ? 'is-pre' : post.indexOf(t.id) !== -1 ? 'is-post' : 'is-dim';
+        var st = status[t.id] === 'done' ? 'Completed' : waitingOn(t).length ? 'Blocked' : STATUS[status[t.id]];
+        return '<button type="button" class="node ' + cls + '" data-node="' + t.id + '" aria-pressed="' + (t.id === selected) + '"><b>' + esc(t.title) + '</b><i>' + st + '</i></button>';
+      }).join('') + '</li>';
+    }).join('') + '</ol>';
+
+    explain.innerHTML = '<strong>' + esc(sel.title) + '</strong> ' +
+      (pre.length ? 'can’t be completed until ' + titles(pre) + (pre.length > 1 ? ' are' : ' is') + ' done. ' : 'has no prerequisites in this journey. ') +
+      (post.length ? 'Completing it unlocks ' + titles(post) + '.' : 'No other step in this journey is waiting on it.');
+  }
+
+  function render(focusId) {
+    renderDash();
+    renderMap();
+    if (focusId) { var el = document.getElementById(focusId) || document.querySelector('[data-node="' + focusId + '"]'); if (el) el.focus(); }
+  }
+
+  form.addEventListener('change', function (e) {
+    var f = e.target;
+    if (!f.name) return;
+    profile[f.name] = f.value;
+    if (f.name === 'purpose') followup.hidden = f.value !== 'study';
+    if (f.name === 'address') status.housing = f.value === 'yes' ? 'done' : 'todo';
+    if (f.name === 'enrolled') status.enrol = f.value === 'yes' ? 'done' : 'todo';
+    render();
+  });
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+  dash.addEventListener('change', function (e) {
+    var id = e.target.getAttribute('data-task');
+    if (!id) return;
+    status[id] = e.target.value;
+    render('st-' + id);
+  });
+  map.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-node]');
+    if (!b) return;
+    selected = b.getAttribute('data-node');
+    render(selected);
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
