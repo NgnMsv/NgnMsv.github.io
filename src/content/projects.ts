@@ -95,8 +95,10 @@ export const projects: Project[] = [
         'I used native elements before custom widgets: radio buttons and checkboxes under the choice pills, a native dialog for the form, a details element for the full tree. Keyboard and screen-reader behaviour comes with them.',
         'The runtime dependencies are React, TanStack Query and one self-hosted font. The router, the i18n layer and the IndexedDB wrapper are small enough to write by hand.',
       ],
-      // TODO(content): replace with the scores measured on the live URL after the first deploy
-      results: todo('Fashion Companion: Lighthouse scores measured on the live demo, and test counts'),
+      results: [
+        'Lighthouse on the live demo, mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100. Performance is the median of three runs, which ranged from 98 to 100.',
+        '165 unit and component tests and 8 end-to-end scenarios, run at desktop and phone size. All of them run in GitHub Actions on every push, and a failure blocks the deploy.',
+      ],
     },
   },
   {
