@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="%LOCALE%">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Every %PLACEHOLDER% is filled in from src/content/ by build/static-pages.ts,
+      so the text here never has to be edited by hand.
+    -->
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESCRIPTION%" />
+    <meta name="author" content="%NAME%" />
+    <link rel="canonical" href="%URL%" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="%NAME%" />
+    <meta property="og:title" content="%TITLE%" />
+    <meta property="og:description" content="%DESCRIPTION%" />
+    <meta property="og:url" content="%URL%" />
+    <meta property="og:image" content="%OG_IMAGE%" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="%TITLE%" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141211" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      Pick the theme before the first paint so the page never flashes the
+      wrong colours: the visitor's saved choice, otherwise the system setting.
+    -->
+    <script>
+      ;(function () {
+        var saved = null
+        try {
+          saved = localStorage.getItem('theme')
+        } catch (e) {}
+        var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="max-width: 40rem; margin: 3rem auto; padding: 0 1rem; font-family: sans-serif">
+        %NAME% — %ROLE%. This site needs JavaScript to show its content. You can reach me at
+        <a href="mailto:%EMAIL%">%EMAIL%</a>.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

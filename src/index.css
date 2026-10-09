@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+/* Dark mode is switched by a `dark` class on <html> (see index.html and lib/theme.ts). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Colour tokens. Components only use these names (bg-bg, text-muted, ...),
+ * so the two themes are defined in exactly one place. All text/background
+ * pairs below meet WCAG AA contrast (4.5:1) in both themes.
+ */
+:root {
+  color-scheme: light;
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --fg: #1c1917;
+  --muted: #57534e;
+  --line: #dedad6;
+  --accent: #9f1239;
+  --accent-fg: #ffffff;
+  --accent-soft: #fbecef;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #141211;
+  --surface: #1e1b1a;
+  --fg: #f5f3f1;
+  --muted: #b5aea9;
+  --line: #3a3432;
+  --accent: #fda4af;
+  --accent-fg: #1f0f13;
+  --accent-soft: #34161e;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+
+  /* System fonts only: nothing to download, no layout shift. */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Keep headings clear of the sticky header when jumping to a section. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* Headings receive focus after a page change; they are not interactive. */
+  h1:focus {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
