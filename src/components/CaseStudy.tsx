@@ -5,6 +5,7 @@ import { ExternalLink, TagList, textLinkClass } from './ui'
 
 const parts = [
   { key: 'problem', heading: 'The problem' },
+  { key: 'before', heading: 'The earlier version' },
   { key: 'built', heading: 'What I built' },
   { key: 'decisions', heading: 'Technical decisions' },
   { key: 'results', heading: 'Results' },
@@ -12,7 +13,7 @@ const parts = [
 
 /** The case-study page for one project: /projects/<slug>/ */
 export function CaseStudy({ project }: { project: Project }) {
-  const { title, year, summary, tech, repo, demo, caseStudy } = project
+  const { title, year, summary, tech, repo, demo, moreLinks, screenshots, caseStudy } = project
   const links = [
     { label: 'Live demo', link: demo },
     { label: 'GitHub', link: repo },
@@ -52,7 +53,27 @@ export function CaseStudy({ project }: { project: Project }) {
             </li>
           ),
         )}
+        {moreLinks?.map((link) => (
+          <li key={link.href}>
+            <ExternalLink href={link.href}>{link.label}</ExternalLink>
+          </li>
+        ))}
       </ul>
+
+      {screenshots?.map((shot) => (
+        <figure key={shot.src} className="mt-10">
+          <img
+            src={shot.src}
+            width={shot.width}
+            height={shot.height}
+            alt={shot.alt}
+            loading="lazy"
+            decoding="async"
+            className="h-auto w-full rounded-xl border border-line"
+          />
+          <figcaption className="mt-2 text-sm text-muted">{shot.caption}</figcaption>
+        </figure>
+      ))}
 
       {parts.map(({ key, heading }) => (
         <CaseStudyPart key={key} heading={heading} content={caseStudy[key]} />
@@ -61,7 +82,14 @@ export function CaseStudy({ project }: { project: Project }) {
   )
 }
 
-function CaseStudyPart({ heading, content }: { heading: string; content: Maybe<string[]> }) {
+interface CaseStudyPartProps {
+  heading: string
+  /** `undefined` for an optional part the project does not have. */
+  content: Maybe<string[]> | undefined
+}
+
+function CaseStudyPart({ heading, content }: CaseStudyPartProps) {
+  if (content === undefined) return null
   // An unwritten part is skipped on the live site, heading included.
   if (isPending(content) && !import.meta.env.DEV) return null
 

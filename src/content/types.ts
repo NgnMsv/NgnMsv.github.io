@@ -66,8 +66,18 @@ export interface Job {
   highlights: string[]
 }
 
+export interface Screenshot {
+  src: string
+  width: number
+  height: number
+  alt: string
+  caption: string
+}
+
 export interface CaseStudy {
   problem: Maybe<string[]>
+  /** Optional: what an earlier version of the project did. */
+  before?: string[]
   built: Maybe<string[]>
   decisions: Maybe<string[]>
   results: Maybe<string[]>
@@ -84,6 +94,10 @@ export interface Project {
   tech: Maybe<string[]>
   repo: Maybe<string>
   demo: Maybe<string>
+  /** Further links shown on the case-study page, e.g. earlier repositories. */
+  moreLinks?: Link[]
+  /** Shown on the case-study page, in this order. */
+  screenshots?: Screenshot[]
   caseStudy: CaseStudy
 }
 

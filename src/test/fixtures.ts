@@ -39,8 +39,19 @@ export const finishedProject: Project = {
   tech: ['React', 'TypeScript'],
   repo: 'https://github.com/ada-example/finished',
   demo: 'https://example.com/finished',
+  moreLinks: [{ label: 'Earlier version', href: 'https://github.com/ada-example/old' }],
+  screenshots: [
+    {
+      src: '/shot.webp',
+      width: 800,
+      height: 600,
+      alt: 'The main screen.',
+      caption: 'Caption of the screenshot.',
+    },
+  ],
   caseStudy: {
     problem: ['The problem text.'],
+    before: ['The earlier version text.'],
     built: ['The build text.'],
     decisions: ['The decisions text.'],
     results: todo('results'),
