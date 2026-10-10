@@ -30,7 +30,7 @@ export const projects: Project[] = [
     year: '2024',
     published: true,
     summary:
-      'A closet manager that suggests outfits with a decision tree and shows the exact rules behind every suggestion. It runs entirely in the browser.',
+      'A closet manager that suggests outfits with a decision tree and shows the exact rules behind every suggestion.',
     tech: [
       'React',
       'TypeScript',
@@ -41,7 +41,6 @@ export const projects: Project[] = [
       'Vitest',
       'React Testing Library',
       'Playwright',
-      'GitHub Actions',
     ],
     repo: 'https://github.com/NgnMsv/fashion-companion',
     demo: 'https://ngnmsv.github.io/fashion-companion/',
@@ -87,7 +86,7 @@ export const projects: Project[] = [
       ],
       results: [
         'Lighthouse on the live demo, mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100. Performance is the median of three runs, which ranged from 98 to 100.',
-        '164 unit and component tests and 8 end-to-end scenarios, run at desktop and phone size. All of them run in GitHub Actions on every push, and a failure blocks the deploy.',
+        '164 unit and component tests and 8 end-to-end scenarios, run at desktop and phone size. All of them run automatically on every push, and a failure blocks the deploy.',
       ],
     },
   },

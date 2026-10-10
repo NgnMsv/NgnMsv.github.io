@@ -18,7 +18,7 @@ export const experience: Job[] = [
     company: 'Nobitex',
     start: '2019-08',
     end: '2021-12',
-    note: 'Part-time, alongside B.Sc.',
+    note: 'Part-time',
     highlights: [
       'Built component-based React applications showing real-time market, transaction, and portfolio data for a cryptocurrency exchange.',
       'Integrated the Binance and Coinbase APIs.',

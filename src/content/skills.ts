@@ -7,7 +7,7 @@ export const skills: SkillGroup[] = [
   },
   {
     category: 'Testing & tooling',
-    skills: ['Vitest', 'React Testing Library', 'Playwright', 'GitHub Actions'],
+    skills: ['Vitest', 'React Testing Library', 'Playwright'],
   },
   {
     category: 'UX research & design',
@@ -18,7 +18,7 @@ export const skills: SkillGroup[] = [
     skills: ['Accessibility', 'i18n', 'Performance optimization'],
   },
   {
-    category: 'Also',
+    category: 'Data & scripting',
     skills: ['Python', 'SQL'],
   },
 ]
