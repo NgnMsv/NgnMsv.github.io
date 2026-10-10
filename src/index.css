@@ -10,37 +10,49 @@
  */
 :root {
   color-scheme: light;
-  --bg: #fbfaf8;
+  --bg: #fbfaf9;
   --surface: #ffffff;
-  --fg: #1c1917;
-  --muted: #57534e;
-  --line: #dedad6;
-  --accent: #9f1239;
+  --surface-2: #f4f1ee;
+  --fg: #1b1716;
+  --muted: #5c5550;
+  --line: #e6e1dc;
+  --accent: #be123c;
+  --accent-2: #c2410c;
   --accent-fg: #ffffff;
-  --accent-soft: #fbecef;
+  --accent-soft: #fdecef;
+  --shadow: 28 20 16;
 }
 
 .dark {
   color-scheme: dark;
-  --bg: #141211;
-  --surface: #1e1b1a;
-  --fg: #f5f3f1;
-  --muted: #b5aea9;
-  --line: #3a3432;
-  --accent: #fda4af;
-  --accent-fg: #1f0f13;
-  --accent-soft: #34161e;
+  --bg: #100e0e;
+  --surface: #1a1717;
+  --surface-2: #242020;
+  --fg: #f6f3f1;
+  --muted: #b8b0ab;
+  --line: #342e2c;
+  --accent: #fb7185;
+  --accent-2: #fdba74;
+  --accent-fg: #1f0a10;
+  --accent-soft: #3a1420;
+  --shadow: 0 0 0;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
+
+  /* One soft shadow for cards, one stronger for a hovered card. */
+  --shadow-card: 0 1px 2px rgb(var(--shadow) / 0.05), 0 12px 28px -18px rgb(var(--shadow) / 0.25);
+  --shadow-lift: 0 2px 4px rgb(var(--shadow) / 0.06), 0 22px 40px -20px rgb(var(--shadow) / 0.35);
 
   /* System fonts only: nothing to download, no layout shift. */
   --font-sans:
@@ -56,11 +68,27 @@
   }
 
   body {
+    position: relative;
+    /* Keeps the glow below (z-index: -1) above the page background. */
+    isolation: isolate;
     background-color: var(--bg);
     color: var(--fg);
     font-family: var(--font-sans);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* A soft glow in the two accent colours behind the top of every page. */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: -1;
+    height: 44rem;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 30rem at 10% -8%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+      radial-gradient(48rem 26rem at 92% -4%, color-mix(in oklab, var(--accent-2) 14%, transparent), transparent 70%);
   }
 
   /* Keep headings clear of the sticky header when jumping to a section. */

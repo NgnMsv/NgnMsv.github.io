@@ -10,7 +10,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
-      className="inline-flex size-11 items-center justify-center rounded-md text-fg transition-colors hover:text-accent"
+      className="inline-flex size-11 items-center justify-center rounded-full text-fg transition-colors hover:text-accent"
     >
       <svg
         aria-hidden="true"

@@ -1,13 +1,13 @@
 import type { SkillGroup } from '../content/types'
-import { Section, TagList } from './ui'
+import { cardClass, Section, TagList } from './ui'
 
 export function Skills({ groups }: { groups: SkillGroup[] }) {
   return (
     <Section id="skills" title="Skills">
-      <div className="space-y-7">
+      <div className="grid gap-6 sm:grid-cols-2">
         {groups.map((group) => (
-          <div key={group.category} className="grid gap-3 sm:grid-cols-[12rem_1fr]">
-            <h3 className="pt-1 font-semibold">{group.category}</h3>
+          <div key={group.category} className={`${cardClass} space-y-4 p-6`}>
+            <h3 className="font-semibold">{group.category}</h3>
             <TagList label={`${group.category} skills`} items={group.skills} />
           </div>
         ))}

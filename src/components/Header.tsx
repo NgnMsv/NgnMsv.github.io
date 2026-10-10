@@ -28,7 +28,7 @@ export function Header({ name, nav, onHome }: HeaderProps) {
   }, [menuOpen])
 
   return (
-    <header className="sticky top-0 z-10 border-b border-line bg-bg/90 backdrop-blur">
+    <header className="sticky top-0 z-10 border-b border-line bg-bg/80 backdrop-blur-md">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-20 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-fg"
@@ -38,9 +38,15 @@ export function Header({ name, nav, onHome }: HeaderProps) {
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5 md:px-8">
         <Link
           to="/"
-          className="font-semibold tracking-tight text-fg"
+          className="flex items-center gap-2.5 font-semibold tracking-tight text-fg"
           onClick={() => setMenuOpen(false)}
         >
+          <span
+            aria-hidden="true"
+            className="inline-flex size-8 items-center justify-center rounded-lg bg-linear-to-br from-accent to-accent-2 text-xs font-bold text-accent-fg"
+          >
+            {initials(name)}
+          </span>
           {name}
         </Link>
 
@@ -59,7 +65,7 @@ export function Header({ name, nav, onHome }: HeaderProps) {
                     to={onHome ? `#${item.id}` : `/#${item.id}`}
                     aria-current={active === item.id ? 'location' : undefined}
                     onClick={() => setMenuOpen(false)}
-                    className="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted transition-colors hover:text-fg aria-[current]:text-accent"
+                    className="flex min-h-11 items-center rounded-full px-3.5 text-sm font-medium text-muted transition-colors hover:text-fg aria-[current]:bg-accent-soft aria-[current]:text-accent"
                   >
                     {item.label}
                   </Link>
@@ -75,12 +81,33 @@ export function Header({ name, nav, onHome }: HeaderProps) {
             aria-expanded={menuOpen}
             aria-controls="main-menu"
             onClick={() => setMenuOpen((open) => !open)}
-            className="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-fg md:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full text-fg transition-colors hover:text-accent md:hidden"
           >
-            Menu
+            <span className="sr-only">Menu</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
           </button>
         </div>
       </div>
     </header>
   )
+}
+
+/** "Negin Mousavi" -> "NM" */
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((word) => word.charAt(0))
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 }

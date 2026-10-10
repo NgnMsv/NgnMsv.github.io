@@ -69,7 +69,7 @@ export function CaseStudy({ project }: { project: Project }) {
             alt={shot.alt}
             loading="lazy"
             decoding="async"
-            className="h-auto w-full rounded-xl border border-line"
+            className="h-auto w-full rounded-2xl border border-line shadow-card"
           />
           <figcaption className="mt-2 text-sm text-muted">{shot.caption}</figcaption>
         </figure>

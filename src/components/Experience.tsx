@@ -21,16 +21,16 @@ export function Experience({ jobs }: { jobs: Job[] }) {
           <li key={`${job.company}-${job.start}`} className="relative pl-6 md:pl-8">
             <span
               aria-hidden="true"
-              className="absolute top-2 -left-[5px] size-[9px] rounded-full bg-accent"
+              className="absolute top-1.5 -left-[7px] size-[13px] rounded-full border-2 border-accent bg-bg"
             />
             <h3 className="text-xl font-semibold tracking-tight">
               {job.role} <span className="font-normal text-muted">· {job.company}</span>
             </h3>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 font-mono text-sm text-muted">
               <DateRange start={job.start} end={job.end} />
               {job.note && <> · {job.note}</>}
             </p>
-            <ul className="mt-4 list-disc space-y-2 pl-5 marker:text-muted">
+            <ul className="mt-4 list-disc space-y-2 pl-5 marker:text-accent">
               {job.highlights.map((highlight) => (
                 <li key={highlight} className="text-pretty">
                   {highlight}

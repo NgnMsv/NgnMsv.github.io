@@ -4,10 +4,13 @@ import type { ReactNode } from 'react'
 
 export const buttonClass = {
   primary:
-    'inline-flex min-h-11 items-center justify-center rounded-md bg-accent px-5 text-sm font-semibold text-accent-fg transition-opacity hover:opacity-90',
+    'inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-fg shadow-card transition hover:-translate-y-0.5 hover:shadow-lift',
   secondary:
-    'inline-flex min-h-11 items-center justify-center rounded-md border border-fg/30 px-5 text-sm font-semibold text-fg transition-colors hover:border-accent hover:text-accent',
+    'inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 text-sm font-semibold text-fg transition hover:-translate-y-0.5 hover:border-accent hover:text-accent',
 } as const
+
+/** The box around a project, a skill group, a publication, and similar. */
+export const cardClass = 'rounded-2xl border border-line bg-surface shadow-card'
 
 export const textLinkClass =
   'font-medium text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:decoration-accent'
@@ -26,10 +29,12 @@ export function Section({ id, title, children }: SectionProps) {
       aria-labelledby={`${id}-title`}
       className="grid gap-6 border-t border-line py-14 md:grid-cols-[11rem_1fr] md:gap-10 md:py-20"
     >
+      {/* On wide screens the heading stays in view while its section scrolls past. */}
       <h2
         id={`${id}-title`}
-        className="font-mono text-sm font-semibold tracking-widest text-accent uppercase"
+        className="flex items-center gap-3 self-start font-mono text-sm font-semibold tracking-widest text-accent uppercase md:sticky md:top-24"
       >
+        <span aria-hidden="true" className="h-px w-6 bg-accent" />
         {title}
       </h2>
       <div className="min-w-0">{children}</div>
@@ -43,7 +48,7 @@ export function TagList({ label, items }: { label: string; items: string[] }) {
       {items.map((item) => (
         <li
           key={item}
-          className="rounded-full border border-line bg-surface px-3 py-1 text-sm text-muted"
+          className="rounded-full bg-surface-2 px-3 py-1 text-sm text-muted"
         >
           {item}
         </li>

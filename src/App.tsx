@@ -62,11 +62,11 @@ export function App() {
         {route.name === 'home' && (
           <>
             <Hero profile={profile} />
+            <About profile={profile} education={education} certificates={certificates} />
             <Projects projects={projects} includeDrafts={includeDrafts} />
             <Experience jobs={experience} />
             <Skills groups={skills} />
             <Research publications={publications} />
-            <About profile={profile} education={education} certificates={certificates} />
             <Contact profile={profile} />
           </>
         )}

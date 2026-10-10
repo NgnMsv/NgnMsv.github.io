@@ -10,13 +10,13 @@ test('draw the Open Graph image', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 630 })
   await page.setContent(`
     <body style="margin:0;width:1200px;height:630px;box-sizing:border-box;padding:90px;
-      background:#fbfaf8;color:#1c1917;font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
-      display:flex;flex-direction:column;justify-content:center;border-left:28px solid #9f1239">
+      background:#fbfaf9;color:#1b1716;font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+      display:flex;flex-direction:column;justify-content:center;border-left:28px solid;border-image:linear-gradient(#be123c,#c2410c) 1">
       <div style="font:600 30px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;
-        text-transform:uppercase;color:#9f1239">${profile.role}</div>
+        text-transform:uppercase;color:#be123c">${profile.role}</div>
       <div style="font-size:112px;font-weight:700;letter-spacing:-.03em;margin-top:24px;line-height:1.05">
         ${profile.name}</div>
-      <div style="font-size:36px;color:#57534e;margin-top:36px">
+      <div style="font-size:36px;color:#5c5550;margin-top:36px">
         ${profile.location} · ${new URL(site.url).host}</div>
     </body>`)
   await page.screenshot({ path: 'public/og.png' })

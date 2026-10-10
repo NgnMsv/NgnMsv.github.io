@@ -31,36 +31,38 @@ export function Contact({ profile }: { profile: Profile }) {
 
   return (
     <Section id="contact" title="Contact">
-      <p className="text-2xl font-semibold tracking-tight break-words md:text-3xl">
-        <a
-          href={`mailto:${profile.email}`}
-          className="underline decoration-accent/50 underline-offset-8 transition-colors hover:text-accent"
-        >
-          {profile.email}
-        </a>
-      </p>
-
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <a href={`mailto:${profile.email}`} className={buttonClass.primary}>
-          Write an email
-        </a>
-        <button type="button" onClick={copyEmail} className={buttonClass.secondary}>
-          Copy email
-        </button>
-        {/* Announced by screen readers when the text changes. */}
-        <p role="status" className="text-sm text-muted">
-          {copyMessage[copyState]}
+      <div className="rounded-3xl border border-line bg-linear-to-br from-accent-soft to-surface p-6 shadow-card md:p-10">
+        <p className="text-2xl font-semibold tracking-tight break-words md:text-3xl">
+          <a
+            href={`mailto:${profile.email}`}
+            className="underline decoration-accent/50 underline-offset-8 transition-colors hover:text-accent"
+          >
+            {profile.email}
+          </a>
         </p>
-      </div>
 
-      <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-        <li>
-          <ExternalLink href={profile.linkedin}>LinkedIn</ExternalLink>
-        </li>
-        <li>
-          <ExternalLink href={profile.github}>GitHub</ExternalLink>
-        </li>
-      </ul>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <a href={`mailto:${profile.email}`} className={buttonClass.primary}>
+            Write an email
+          </a>
+          <button type="button" onClick={copyEmail} className={buttonClass.secondary}>
+            Copy email
+          </button>
+          {/* Announced by screen readers when the text changes. */}
+          <p role="status" className="text-sm text-muted">
+            {copyMessage[copyState]}
+          </p>
+        </div>
+
+        <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+          <li>
+            <ExternalLink href={profile.linkedin}>LinkedIn</ExternalLink>
+          </li>
+          <li>
+            <ExternalLink href={profile.github}>GitHub</ExternalLink>
+          </li>
+        </ul>
+      </div>
     </Section>
   )
 }

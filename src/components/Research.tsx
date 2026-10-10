@@ -1,13 +1,13 @@
 import type { Publication } from '../content/types'
 import { formatList } from '../lib/format'
-import { ExternalLink, Section } from './ui'
+import { cardClass, ExternalLink, Section } from './ui'
 
 export function Research({ publications }: { publications: Publication[] }) {
   return (
     <Section id="research" title="Research">
-      <ul className="space-y-10">
+      <ul className="space-y-6">
         {publications.map((publication) => (
-          <li key={publication.title}>
+          <li key={publication.title} className={`${cardClass} p-6`}>
             <h3 className="text-xl font-semibold tracking-tight text-balance">
               {publication.title}
             </h3>

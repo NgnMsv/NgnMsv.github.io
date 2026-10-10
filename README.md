@@ -103,7 +103,7 @@ Put two square JPEGs in `public/images/` (200 px and 400 px wide) and update `ph
 
 ### Change the colours
 
-Both themes are defined at the top of `src/index.css` as eight variables each (`--bg`, `--fg`, `--accent`, …). Change them there and every component follows. Keep text contrast at 4.5:1 or higher; <https://webaim.org/resources/contrastchecker/> checks a pair.
+Both themes are defined at the top of `src/index.css` as a short list of variables each (`--bg`, `--fg`, `--accent`, …). Change them there and every component follows. Keep text contrast at 4.5:1 or higher; <https://webaim.org/resources/contrastchecker/> checks a pair.
 
 ## Deploy
 

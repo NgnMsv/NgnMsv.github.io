@@ -26,7 +26,7 @@ src/
     types.ts               The shape of every content file, and the todo() marker
     profile.ts, projects.ts, experience.ts, education.ts,
     publications.ts, certificates.ts, skills.ts, site.ts
-  components/              One file per section (Hero, Projects, Experience, …) plus tests
+  components/              One file per section (Hero, About, Projects, …) plus tests
     ui.tsx                 Shared pieces: Section, TagList, ExternalLink, button styles
     Todo.tsx               The TODO(content) badge
   lib/
@@ -142,8 +142,9 @@ Tailwind CSS v4 through its Vite plugin. Styles are utility classes in the compo
 ## Performance
 
 - No web fonts, no UI library, no router library, no analytics. The JavaScript is React plus the site's own code.
-- The only content image is the portrait: two sizes via `srcset`, fixed `width`/`height` (no layout shift), and lazy-loaded because it is far down the page.
-- Animation is limited to short colour transitions on hover.
+- Content images are the portrait (two sizes via `srcset`) and one screenshot per project card. All have a fixed `width`/`height` (no layout shift) and are lazy-loaded, because they sit below the first screen.
+- The glow behind the top of the page and the gradients are plain CSS, not images.
+- Animation is limited to short transitions on hover: colour, and a 2 px lift on cards and buttons.
 - Vite fingerprints the CSS and JavaScript file names, so browsers can cache them for a long time.
 
 ## Testing

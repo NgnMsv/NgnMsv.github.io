@@ -13,10 +13,10 @@ export const site = {
 } as const
 
 export const nav: NavItem[] = [
+  { id: 'about', label: 'About' },
   { id: 'projects', label: 'Projects' },
   { id: 'experience', label: 'Experience' },
   { id: 'skills', label: 'Skills' },
   { id: 'research', label: 'Research' },
-  { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ]
