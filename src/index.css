@@ -56,7 +56,8 @@
 
   /* System fonts only: nothing to download, no layout shift. */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
@@ -86,16 +87,8 @@
     height: 44rem;
     pointer-events: none;
     background:
-      radial-gradient(
-        60rem 30rem at 10% -8%,
-        color-mix(in oklab, var(--accent) 16%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        48rem 26rem at 92% -4%,
-        color-mix(in oklab, var(--accent-2) 14%, transparent),
-        transparent 70%
-      );
+      radial-gradient(60rem 30rem at 10% -8%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+      radial-gradient(48rem 26rem at 92% -4%, color-mix(in oklab, var(--accent-2) 14%, transparent), transparent 70%);
   }
 
   /* Keep headings clear of the sticky header when jumping to a section. */
@@ -120,205 +113,6 @@
   }
 }
 
-/*
- * 3D and motion. Everything here is CSS: transforms, and animations that are
- * driven by the scroll position where the browser supports it. The only
- * JavaScript involved is lib/usePointerTilt.ts, which writes the mouse
- * position into --px / --py (each -1 to 1; 0 when the mouse is elsewhere).
- */
-@layer components {
-  /* A faint dot grid behind the hero that fades out downwards. */
-  body::after {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: -1;
-    height: 40rem;
-    pointer-events: none;
-    background-image: radial-gradient(
-      circle,
-      color-mix(in oklab, var(--fg) 16%, transparent) 1px,
-      transparent 1.5px
-    );
-    background-size: 26px 26px;
-    mask-image: linear-gradient(to bottom, black, transparent 85%);
-  }
-
-  /* ---- The layered page in the hero (components/HeroStack.tsx) ---- */
-
-  .scene {
-    display: grid;
-    place-items: center;
-    height: 22rem;
-    perspective: 1400px;
-    pointer-events: none;
-  }
-
-  .stack-float {
-    transform-style: preserve-3d;
-    animation: stack-float 7s ease-in-out infinite;
-  }
-
-  .stack {
-    --w: 11.5rem;
-    --gap: 3rem;
-    position: relative;
-    width: var(--w);
-    height: calc(var(--w) * 1.32);
-    transform-style: preserve-3d;
-    /* The base angle gives the isometric view; the mouse adds a few degrees. */
-    transform: rotateX(calc(56deg - var(--py, 0) * 8deg))
-      rotateZ(calc(-36deg + var(--px, 0) * 12deg));
-    transition: transform 0.4s ease-out;
-  }
-
-  /* The soft shadow on the "floor" under the lowest layer. */
-  .stack::before {
-    content: '';
-    position: absolute;
-    inset: 4%;
-    border-radius: 1.5rem;
-    background: rgb(var(--shadow) / 0.35);
-    filter: blur(26px);
-    transform: translateZ(-3rem);
-  }
-
-  .layer {
-    position: absolute;
-    inset: 0;
-    border-radius: 1rem;
-    /* --i is the layer's number (0, 1, 2), set in HeroStack.tsx. */
-    transform: translateZ(calc(var(--gap) * var(--i)));
-    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  /* The layers move apart while the mouse is over the hero. */
-  .hero:hover .stack {
-    --gap: 4.5rem;
-  }
-
-  .layer-wire {
-    border: 1.5px dashed color-mix(in oklab, var(--fg) 35%, transparent);
-    background-color: color-mix(in oklab, var(--surface) 35%, transparent);
-  }
-
-  .layer-blocks {
-    border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
-    background-color: color-mix(in oklab, var(--surface) 55%, transparent);
-  }
-
-  .layer-ui {
-    border: 1px solid var(--line);
-    background-color: var(--surface);
-    box-shadow: 0 24px 48px -24px rgb(var(--shadow) / 0.45);
-  }
-
-  @media (min-width: 64rem) {
-    .scene {
-      height: 30rem;
-    }
-
-    .stack {
-      --w: 16.5rem;
-      --gap: 4rem;
-    }
-
-    .hero:hover .stack {
-      --gap: 6rem;
-    }
-  }
-
-  /* ---- Cards that tilt towards the mouse (components/ui.tsx: Tilt) ---- */
-
-  .tilt {
-    position: relative;
-    transform-style: preserve-3d;
-    transform: perspective(1100px) rotateX(calc(var(--py, 0) * var(--tilt-max) * -1))
-      rotateY(calc(var(--px, 0) * var(--tilt-max)));
-    transition: transform 0.3s ease-out;
-  }
-
-  /* A highlight that follows the mouse across the card. */
-  .tilt::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: radial-gradient(
-      circle at calc((var(--px, 0) + 1) * 50%) calc((var(--py, 0) + 1) * 50%),
-      rgb(255 255 255 / 0.16),
-      transparent 45%
-    );
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .tilt:hover::after {
-    opacity: 1;
-  }
-
-  /* A child of a tilting card that floats above its surface. */
-  .tilt-pop {
-    transform: translateZ(0);
-    transition: transform 0.3s ease-out;
-  }
-
-  .tilt:hover .tilt-pop {
-    transform: translateZ(40px);
-  }
-
-  /* ---- The reading-progress line under the header ---- */
-
-  .scroll-progress {
-    position: absolute;
-    inset: auto 0 -1px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  @supports (animation-timeline: scroll()) {
-    .scroll-progress {
-      animation: grow-x linear both;
-      animation-timeline: scroll(root);
-    }
-
-    /* Sections rise into place as they scroll into view. */
-    @media (prefers-reduced-motion: no-preference) {
-      .reveal {
-        animation: reveal linear both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 40%;
-      }
-    }
-  }
-}
-
-@keyframes stack-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes grow-x {
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -330,14 +124,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .tilt,
-  .stack {
-    transform: none;
-  }
-
-  .stack {
-    transform: rotateX(56deg) rotateZ(-36deg);
   }
 }

@@ -35,7 +35,7 @@ export function Header({ name, nav, onHome }: HeaderProps) {
       >
         Skip to content
       </a>
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 md:px-8">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5 md:px-8">
         <Link
           to="/"
           className="flex items-center gap-2.5 font-semibold tracking-tight text-fg"
@@ -98,7 +98,6 @@ export function Header({ name, nav, onHome }: HeaderProps) {
           </button>
         </div>
       </div>
-      <div aria-hidden="true" className="scroll-progress" />
     </header>
   )
 }

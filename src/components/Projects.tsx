@@ -2,7 +2,7 @@ import { isPending, type Maybe, type Project, type Screenshot } from '../content
 import { Link } from '../lib/router'
 import { caseStudyProjects, projectPath, visibleProjects } from '../lib/routes'
 import { Todo } from './Todo'
-import { cardClass, ExternalLink, Section, TagList, textLinkClass, Tilt } from './ui'
+import { cardClass, ExternalLink, Section, TagList, textLinkClass } from './ui'
 
 interface ProjectsProps {
   projects: Project[]
@@ -37,28 +37,13 @@ function ProjectCard({ project, hasCaseStudy }: { project: Project; hasCaseStudy
   const cover = coverOf(project)
 
   return (
-    <Tilt max={cover ? 3 : 5} className="h-full rounded-2xl">
-      <ProjectArticle project={project} hasCaseStudy={hasCaseStudy} cover={cover} />
-    </Tilt>
-  )
-}
-
-interface ProjectArticleProps {
-  project: Project
-  hasCaseStudy: boolean
-  cover: Screenshot | undefined
-}
-
-function ProjectArticle({ project, hasCaseStudy, cover }: ProjectArticleProps) {
-  return (
-    // No `overflow-hidden` here: it would flatten the 3D, and the picture floats above the card.
     <article
-      className={`${cardClass} h-full transition-colors [transform-style:preserve-3d] hover:border-accent/50 hover:shadow-lift ${
+      className={`${cardClass} h-full overflow-hidden transition hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-lift ${
         cover ? 'grid lg:grid-cols-[1.15fr_1fr]' : ''
       }`}
     >
       {cover && (
-        <div className="flex items-center rounded-t-2xl border-b border-line bg-surface-2 p-4 [transform-style:preserve-3d] lg:rounded-l-2xl lg:rounded-tr-none lg:border-r lg:border-b-0 lg:p-6">
+        <div className="flex items-center border-b border-line bg-surface-2 p-4 lg:border-r lg:border-b-0 lg:p-6">
           <img
             src={cover.src}
             width={cover.width}
@@ -66,7 +51,7 @@ function ProjectArticle({ project, hasCaseStudy, cover }: ProjectArticleProps) {
             alt={cover.alt}
             loading="lazy"
             decoding="async"
-            className="tilt-pop h-auto w-full rounded-lg border border-line shadow-card"
+            className="h-auto w-full rounded-lg border border-line shadow-card"
           />
         </div>
       )}
