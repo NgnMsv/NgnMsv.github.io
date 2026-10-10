@@ -1,7 +1,7 @@
 import { isPending, type Certificate, type Degree, type Profile } from '../content/types'
 import { DateRange } from './Experience'
 import { Todo } from './Todo'
-import { cardClass, ExternalLink, Section } from './ui'
+import { cardClass, ExternalLink, Section, Tilt } from './ui'
 
 interface AboutProps {
   profile: Profile
@@ -18,16 +18,18 @@ export function About({ profile, education, certificates }: AboutProps) {
         {isPending(photo) ? (
           <Todo note={photo.todo} />
         ) : (
-          <img
-            src={photo.src}
-            srcSet={`${photo.src} 1x, ${photo.src2x} 2x`}
-            width={photo.width}
-            height={photo.height}
-            alt={photo.alt}
-            loading="lazy"
-            decoding="async"
-            className="size-36 shrink-0 rounded-3xl border-4 border-surface object-cover shadow-lift ring-1 ring-line sm:size-44"
-          />
+          <Tilt max={10} className="shrink-0 self-start rounded-3xl">
+            <img
+              src={photo.src}
+              srcSet={`${photo.src} 1x, ${photo.src2x} 2x`}
+              width={photo.width}
+              height={photo.height}
+              alt={photo.alt}
+              loading="lazy"
+              decoding="async"
+              className="size-36 rounded-3xl border-4 border-surface object-cover shadow-lift ring-1 ring-line sm:size-44"
+            />
+          </Tilt>
         )}
         <div className="max-w-2xl space-y-4 text-lg text-pretty">
           {isPending(about) ? (
@@ -63,11 +65,7 @@ export function About({ profile, education, certificates }: AboutProps) {
               <li key={language.name} className="flex items-center justify-between gap-4 py-2.5">
                 <span>{language.name}</span>
                 <span className="rounded-full bg-surface-2 px-3 py-0.5 text-sm text-muted">
-                  {isPending(language.level) ? (
-                    <Todo note={language.level.todo} />
-                  ) : (
-                    language.level
-                  )}
+                  {isPending(language.level) ? <Todo note={language.level.todo} /> : language.level}
                 </span>
               </li>
             ))}

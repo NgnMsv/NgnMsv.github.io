@@ -34,6 +34,7 @@ src/
     router.tsx             The client-side router: usePathname(), navigate(), <Link>
     theme.ts               Light/dark theme hook
     useActiveSection.ts    Highlights the current section in the navigation
+    usePointerTilt.ts      Writes the mouse position into CSS variables for the 3D effects
     format.ts              Date and list formatting
   test/                    Test setup and made-up fixture data
 e2e/site.spec.ts           End-to-end tests (Playwright)
@@ -144,7 +145,9 @@ Tailwind CSS v4 through its Vite plugin. Styles are utility classes in the compo
 - No web fonts, no UI library, no router library, no analytics. The JavaScript is React plus the site's own code.
 - Content images are the portrait (two sizes via `srcset`) and one screenshot per project card. All have a fixed `width`/`height` (no layout shift) and are lazy-loaded, because they sit below the first screen.
 - The glow behind the top of the page and the gradients are plain CSS, not images.
-- Animation is limited to short transitions on hover: colour, and a 2 px lift on cards and buttons.
+- The 3D effects use no library and no canvas. The layered page in the hero (`components/HeroStack.tsx`) is a handful of elements placed with CSS 3D transforms; cards tilt with the same technique. The only JavaScript is `lib/usePointerTilt.ts`, about 40 lines that write the mouse position into two CSS variables, at most once per frame.
+- Sections fade in and the line under the header grows with CSS scroll-driven animations (`animation-timeline`). Browsers without support simply show the content; no scroll listener runs.
+- With `prefers-reduced-motion`, the tilt, the floating, and the fade-in are all off.
 - Vite fingerprints the CSS and JavaScript file names, so browsers can cache them for a long time.
 
 ## Testing

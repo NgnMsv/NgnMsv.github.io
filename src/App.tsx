@@ -58,7 +58,7 @@ export function App() {
   return (
     <>
       <Header name={profile.name} nav={nav} onHome={route.name === 'home'} />
-      <main id="main" className="mx-auto max-w-5xl px-5 md:px-8">
+      <main id="main" className="mx-auto max-w-6xl px-5 md:px-8">
         {route.name === 'home' && (
           <>
             <Hero profile={profile} />

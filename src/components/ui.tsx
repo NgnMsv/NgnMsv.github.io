@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
+import { usePointerTilt } from '../lib/usePointerTilt'
 
 /** Small building blocks shared by the sections. */
 
@@ -37,8 +38,29 @@ export function Section({ id, title, children }: SectionProps) {
         <span aria-hidden="true" className="h-px w-6 bg-accent" />
         {title}
       </h2>
-      <div className="min-w-0">{children}</div>
+      <div className="reveal min-w-0">{children}</div>
     </section>
+  )
+}
+
+interface TiltProps {
+  /** The largest angle, in degrees, the card turns towards the mouse. */
+  max?: number
+  className?: string
+  children: ReactNode
+}
+
+/** Turns its content a few degrees in 3D towards the mouse (see `.tilt` in index.css). */
+export function Tilt({ max = 4, className = '', children }: TiltProps) {
+  const ref = usePointerTilt<HTMLDivElement>()
+  return (
+    <div
+      ref={ref}
+      className={`tilt ${className}`}
+      style={{ '--tilt-max': `${max}deg` } as CSSProperties}
+    >
+      {children}
+    </div>
   )
 }
 
@@ -46,10 +68,7 @@ export function TagList({ label, items }: { label: string; items: string[] }) {
   return (
     <ul aria-label={label} className="flex flex-wrap gap-2">
       {items.map((item) => (
-        <li
-          key={item}
-          className="rounded-full bg-surface-2 px-3 py-1 text-sm text-muted"
-        >
+        <li key={item} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-muted">
           {item}
         </li>
       ))}
