@@ -27,10 +27,10 @@ export const projects: Project[] = [
   {
     slug: 'fashion-companion',
     title: 'Fashion Companion – Intelligent Closet Manager',
-    year: '2024 · redesigned and rebuilt from scratch in 2026',
+    year: '2024',
     published: true,
     summary:
-      'A closet manager that suggests outfits with a hand-written decision tree and shows the exact rules behind every suggestion. It runs entirely in the browser.',
+      'A closet manager that suggests outfits with a decision tree and shows the exact rules behind every suggestion. It runs entirely in the browser.',
     tech: [
       'React',
       'TypeScript',
@@ -45,10 +45,6 @@ export const projects: Project[] = [
     ],
     repo: 'https://github.com/NgnMsv/fashion-companion',
     demo: 'https://ngnmsv.github.io/fashion-companion/',
-    moreLinks: [
-      { label: '2024 frontend', href: 'https://github.com/NgnMsv/Smart-Closet-Frontend' },
-      { label: '2024 backend', href: 'https://github.com/NgnMsv/Smart-Closet-Backend' },
-    ],
     screenshots: [
       {
         src: '/images/fashion-companion/why.webp',
@@ -76,16 +72,10 @@ export const projects: Project[] = [
     caseStudy: {
       problem: [
         'Choosing an outfit from clothes you already own is a small decision that comes up every day. An app can help only if you trust its suggestions, and a suggestion without a reason is hard to trust.',
-        'My 2024 version also had a practical problem: it could not be shown to anyone. It needed a Django server, a task queue and two third-party services before the first screen appeared.',
-      ],
-      before: [
-        'The 2024 version, “Smart Closet”, was a full-stack project: a Create React App frontend with Material UI and a Django REST backend. Users uploaded photos of shirts, pants and footwear, and each item got a dominant colour and two usage tags.',
-        'Users rated random outfits with like or dislike. A scheduled job trained a scikit-learn decision tree per user on those ratings, and the server then drew random outfits until the model approved one.',
-        'It worked, but the model split on raw RGB numbers, so it could not explain a suggestion. It also did nothing for a new user until enough ratings existed.',
       ],
       built: [
-        'I redesigned and rebuilt the project from scratch in 2026; no code, layout or styling was carried over. The new version runs entirely in the browser, so the live demo is the whole product.',
-        'The learned model became a hand-written decision tree in TypeScript. It asks about occasion, season, dress level and colour, and takes the user’s style and favourite colours into account. Because the rules are written down, each outfit comes with a “Why this outfit?” panel that lists every question, its answer, and the verdict.',
+        'Fashion Companion runs entirely in the browser, so the live demo is the whole product.',
+        'Outfits are chosen by a decision tree in TypeScript. It asks about occasion, season, dress level and colour, and takes the user’s style and favourite colours into account. Each outfit comes with a “Why this outfit?” panel that lists every question, its answer, and the verdict.',
         'Around that I designed the product a first-time visitor needs: onboarding in three questions, a sample wardrobe one click away, a searchable and filterable wardrobe, add and edit in one dialog, designed empty and error states, light and dark themes, and English and German.',
       ],
       decisions: [
@@ -97,7 +87,7 @@ export const projects: Project[] = [
       ],
       results: [
         'Lighthouse on the live demo, mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100. Performance is the median of three runs, which ranged from 98 to 100.',
-        '165 unit and component tests and 8 end-to-end scenarios, run at desktop and phone size. All of them run in GitHub Actions on every push, and a failure blocks the deploy.',
+        '164 unit and component tests and 8 end-to-end scenarios, run at desktop and phone size. All of them run in GitHub Actions on every push, and a failure blocks the deploy.',
       ],
     },
   },
