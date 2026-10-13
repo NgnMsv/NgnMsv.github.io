@@ -25,6 +25,61 @@ export const projects: Project[] = [
     },
   },
   {
+    slug: 'feedback-coder',
+    title: 'Feedback Coder – LLM-Assisted Qualitative Coding',
+    year: '2026',
+    published: true,
+    summary:
+      'A Python pipeline that sorts user feedback into categories with an LLM, checks every answer before trusting it, and measures agreement with a human coder.',
+    tech: ['Python', 'OpenAI API', 'Claude API', 'Pydantic', 'Prompt engineering', 'unittest / pytest', 'GitHub Actions'],
+    repo: 'https://github.com/NgnMsv/feedback-coder',
+    demo: 'https://ngnmsv.github.io/feedback-coder/',
+    screenshots: [
+      {
+        src: '/images/feedback-coder/top.webp',
+        width: 1100,
+        height: 860,
+        alt: 'The top of the report: five summary numbers (60 comments, 45 codes assigned, micro-F1 0.68, kappa 0.66, 0 sent to review) and a bar chart of comments per theme.',
+        caption: 'The report opens with the summary and the themes users talk about most.',
+      },
+      {
+        src: '/images/feedback-coder/agree.webp',
+        width: 1100,
+        height: 860,
+        alt: 'The agreement section: a bar chart of F1 per code and a table with precision, recall, F1 and Cohen’s kappa for each of the eight codes.',
+        caption: 'Agreement with the human coder, per code: precision, recall, F1 and Cohen’s kappa.',
+      },
+      {
+        src: '/images/feedback-coder/table.webp',
+        width: 1100,
+        height: 760,
+        alt: 'The comments table with filter buttons for each code. In each comment the quoted evidence is highlighted in yellow, next to the assigned codes and the sentiment.',
+        caption: 'Every code comes with a quote from the comment. Quotes that do not exist are rejected.',
+      },
+    ],
+    caseStudy: {
+      problem: [
+        'Product teams collect hundreds of app reviews, survey answers and support tickets. Sorting them into topics by hand – “coding” them, in research terms – is slow. An LLM can do it in seconds, but it is confident even when it is wrong, so its answers cannot simply be trusted.',
+      ],
+      built: [
+        'A Python pipeline that codes 60 comments about a budgeting app with eight codes, using OpenAI or Claude, and an offline keyword baseline that needs no API key.',
+        'The model receives a codebook with definitions, include and exclude rules and examples, and must answer in a fixed JSON format with an exact quote from the comment as evidence for every code.',
+        'Every answer is checked before it is used, then compared with labels I coded by hand. The result is a self-contained interactive HTML report: themes with quotes, agreement per code, a human-review queue and a filterable table of all comments.',
+      ],
+      decisions: [
+        'Verification instead of trust. Pydantic validates the JSON; if it is invalid, the exact error is sent back and the model retries. A code whose quote does not appear in the comment is dropped as a likely hallucination, an unknown code is dropped, and low confidence sends the comment to human review. Nothing is dropped silently: every decision is listed in the report.',
+        'Measured, not assumed. Each code is evaluated as its own yes/no question with precision, recall and F1, plus Cohen’s kappa, the standard agreement measure between two coders in qualitative research. I wrote the formulas by hand and tested kappa against a textbook example.',
+        'A baseline to compare with. A keyword coder returns the same JSON format and goes through the same checks. My first keyword lists scored 0.92 – because I had written them while reading the test comments. Rewritten from the code definitions only, the baseline scores 0.68. That data leakage taught me never to tune anything on the evaluation data.',
+        'The API calls are plain HTTP with the Python standard library, so every request is visible. Answers are cached by a hash of the prompt: re-running is free, results are reproducible, and a real model run can be presented without an API key.',
+      ],
+      // TODO(content): add the LLM run's micro-F1 and kappa here after running it with an API key.
+      results: [
+        'Keyword baseline: micro-F1 0.68 and mean Cohen’s kappa 0.66. It is precise (0.89) but finds only 56% of the codes – it misses feature requests and praise without obvious keywords, which is the gap the LLM is for.',
+        '42 tests that never call a real API (a fake coder and a mocked HTTP layer), covering the verification rules, the retry loop, the agreement formulas and HTML escaping. Lint, tests and an end-to-end run happen on every push.',
+      ],
+    },
+  },
+  {
     slug: 'fashion-companion',
     title: 'Fashion Companion – Intelligent Closet Manager',
     year: '2024',
