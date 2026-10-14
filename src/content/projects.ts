@@ -73,9 +73,10 @@ export const projects: Project[] = [
         'A baseline to compare with. A keyword coder returns the same JSON format and goes through the same checks. My first keyword lists scored 0.92 – because I had written them while reading the test comments. Rewritten from the code definitions only, the baseline scores 0.68. That data leakage taught me never to tune anything on the evaluation data.',
         'The API calls are plain HTTP with the Python standard library, so every request is visible. Answers are cached by a hash of the prompt: re-running is free, results are reproducible, and a real model run can be presented without an API key.',
       ],
-      // TODO(content): add the LLM run's micro-F1 and kappa here after running it with an API key.
       results: [
-        'Keyword baseline: micro-F1 0.68 and mean Cohen’s kappa 0.66. It is precise (0.89) but finds only 56% of the codes – it misses feature requests and praise without obvious keywords, which is the gap the LLM is for.',
+        'With Claude Haiku 5.5: micro-F1 0.96 and mean Cohen’s kappa 0.96, against 0.68 and 0.66 for the keyword baseline. Every quote passed the evidence check, and 7 of 60 comments were sent to human review for low confidence.',
+        'Most of the six disagreements with my own labels are about praise – is “works perfectly with Volksbank” praise or only a bank-sync remark? That is a codebook rule to sharpen, not a model error, and exactly what the evaluation is for.',
+        'Keyword baseline: micro-F1 0.68. It is precise (0.89) but finds only 56% of the codes, because it cannot read meaning or negation.',
         '42 tests that never call a real API (a fake coder and a mocked HTTP layer), covering the verification rules, the retry loop, the agreement formulas and HTML escaping. Lint, tests and an end-to-end run happen on every push.',
       ],
     },
