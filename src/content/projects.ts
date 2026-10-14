@@ -28,7 +28,8 @@ export const projects: Project[] = [
     slug: 'feedback-coder',
     title: 'Feedback Coder – LLM-Assisted Qualitative Coding',
     year: '2026',
-    published: true,
+    // Hidden for now. Set back to true to show it on the live site again.
+    published: false,
     summary:
       'A Python pipeline that sorts user feedback into categories with an LLM, checks every answer before trusting it, and measures agreement with a human coder.',
     tech: ['Python', 'OpenAI API', 'Claude API', 'Pydantic', 'Prompt engineering', 'unittest / pytest', 'GitHub Actions'],
