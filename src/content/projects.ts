@@ -7,6 +7,42 @@ import { todo, type Project } from './types.ts'
  */
 export const projects: Project[] = [
   {
+    slug: 'leitfaden-lotse',
+    title: 'Leitfaden-Lotse – RAG over German Public Guidelines',
+    year: '2026',
+    // Draft until I have walked through the code and run the evaluation myself.
+    // Set to true to show it on the live site.
+    published: false,
+    summary:
+      'Ask questions about German laws and official guides in English or German, and get short answers in which every statement cites the PDF page it came from.',
+    tech: ['Python', 'FastAPI', 'RAG', 'Qdrant', 'Ollama', 'bge-m3', 'Tool calling', 'NumPy', 'Docker', 'unittest', 'GitHub Actions'],
+    repo: 'https://github.com/NgnMsv/leitfaden-lotse',
+    demo: todo('Leitfaden-Lotse: demo video or hosted demo link'),
+    caseStudy: {
+      problem: [
+        'Living and working in Germany comes with long official documents: the minimum-wage law, the BAMF welcome guide, health-insurance and mini-job brochures. They are written in German and spread over many sites. A chatbot can summarise them, but it may invent an answer and you cannot see where it came from.',
+      ],
+      built: [
+        'A retrieval-augmented generation (RAG) system over 21 official documents from BAMF, BMAS, BMG, the Federal Employment Agency, Deutsche Rentenversicherung and gesetze-im-internet.de. A script downloads them from the publishers; any other PDF can be uploaded in the browser.',
+        'PDFs are split into chunks along sentence boundaries, embedded with the multilingual bge-m3 model in Ollama and stored in Qdrant. A FastAPI backend retrieves the best passages and lets a language model answer only from them, with numbered citations that open the PDF at the right page.',
+        'An agent mode gives the model three tools – search, read a page, list documents – so it can search several times, in German for an English question, and every tool call is shown in the interface.',
+      ],
+      decisions: [
+        'Refuse before generating. If the best passage is below a similarity threshold, the app says the answer is not in the documents and never calls the model. The threshold is checked with off-topic questions in the evaluation.',
+        'Check, don’t trust. The model’s citations are parsed in code: a number that does not exist is removed and listed under the answer, and an answer without a valid citation is marked as not grounded.',
+        'Chunks never cross a page, so every citation points to exactly one page. German abbreviations like “z. B.” and “Abs.” do not end a sentence.',
+        'Interfaces with two implementations: an offline hashing embedder and a NumPy store next to bge-m3 and Qdrant. The whole app runs and is tested without any model or service, and the hashing embedder is the baseline the real model is measured against.',
+        'Outside services are called through one small standard-library HTTP helper instead of SDKs, so every request is visible and tests replace the transport with a fake. Ollama, Groq and OpenAI all work through the same OpenAI-compatible client.',
+        'Text from PDFs and models reaches the page only through textContent or escaping, so a document can never inject script into the interface.',
+      ],
+      // TODO(content): add Hit@1 / Hit@5 / MRR for the hashing baseline and bge-m3, and the
+      // off-topic refusal rate, from `python -m scripts.evaluate`, before publishing.
+      results: [
+        '66 tests that never call a real model or service, covering chunking, both vector stores, refusal and citation checks, the agent loop and every API route. GitHub Actions runs them on Python 3.11–3.13 and builds and starts the Docker image on every push.',
+      ],
+    },
+  },
+  {
     slug: 'market-dashboard',
     title: 'Real-Time Market Dashboard',
     year: todo('Market Dashboard: year'),
